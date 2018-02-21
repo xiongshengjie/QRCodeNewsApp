@@ -1,0 +1,32 @@
+<resources>
+  <string name="app_name">QRCodeNews</string>
+  <string name="font_size">字体大小</string>
+  <string name="font_color">文字颜色</string>
+  <string name="font_spacing">行间距</string>
+  <string name="font_none">none</string>
+  <string name="font_highlight_color">高亮</string>
+  <string name="font_default_text">AaBbCcDd</string>
+  <string name="font_style_normal">正文</string>
+  <string name="font_style_heading_1">标题 1</string>
+  <string name="font_style_heading_2">标题 2</string>
+  <string name="font_style_heading_3">标题 3</string>
+  <string name="font_insert">插入</string>
+  <string name="edit_hyperlink">添加超链接</string>
+  <string name="address">网址:</string>
+  <string name="text_to_display">文字:</string>
+  <string name="ok">完成</string>
+  <string name="edit_table">添加表格</string>
+  <string name="heading_4">标题 4</string>
+  <string name="heading_5">标题 5</string>
+  <string name="heading_6">标题 6</string>
+  <string name="rows">行数</string>
+  <string name="cols">列数</string>
+  <string name="title">提示</string>
+  <string name="publish_message">确认发布？</string>
+  <string name="publish">发布</string>
+  <string name="cancle">取消</string>
+  <string name="confirm">确定</string>
+  <string name="upload_url">http://192.168.0.109:8080/qrcodenews/news/publish</string>
+  <string name="update">更新</string>
+  <string name="server_error">服务器开小差了 请稍后重试</string>
+</resources>

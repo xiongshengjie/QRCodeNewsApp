@@ -26,7 +26,6 @@
   <string name="publish">发布</string>
   <string name="cancle">取消</string>
   <string name="confirm">确定</string>
-  <string name="upload_url">http://192.168.0.109:8080/qrcodenews/news/publish</string>
   <string name="update">更新</string>
   <string name="server_error">服务器开小差了 请稍后重试</string>
 </resources>

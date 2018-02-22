@@ -48,6 +48,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.xcloude.qrcodenewsapp.R;
+import cn.xcloude.qrcodenewsapp.constant.Constants;
 import cn.xcloude.qrcodenewsapp.fragment.EditHyperlinkPopWindow;
 import cn.xcloude.qrcodenewsapp.fragment.EditTablePopWindow;
 import cn.xcloude.qrcodenewsapp.fragment.EditorMenuFragment;
@@ -77,7 +78,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
 
     private ProgressDialog dialog = null;
 
-    private List<File> files;
+    private List<File> files = new ArrayList<>();
 
     /**
      * The keyboard height provider
@@ -249,12 +250,18 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                     publishDialog.setPositiveButton(R.string.publish, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            Map<String, String> params = new HashMap<>();
+                            final Map<String, String> params = new HashMap<>();
                             params.put("title", newsTitle.getText().toString());
                             params.put("author", "xiongshengjie");
                             params.put("category", "1");
                             params.put("html", html);
-                            publishNews(params);
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    publishNews(params);
+                                }
+                            });
                         }
                     });
                     publishDialog.setNegativeButton(R.string.cancle, new DialogInterface.OnClickListener() {
@@ -269,27 +276,29 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
             };
 
     private void publishNews(Map<String, String> params) {
-        OkHttpUtil.postFile(getString(R.string.upload_url), new ProgressListener() {
+
+        if (dialog == null) {
+            dialog = new ProgressDialog(PublishNewsActivity.this);
+        }
+        //设置进度条风格，风格为圆形，旋转的
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        //设置ProgressDialog 标题
+        dialog.setTitle("发布中");
+        //设置ProgressDialog 提示信息
+        dialog.setMessage("发布进度");
+        //设置ProgressDialog的最大进度
+        dialog.setMax(100);
+        dialog.setProgress(0);
+        dialog.setCancelable(false);
+        if (!dialog.isShowing()) {
+            dialog.show();
+        }
+
+        OkHttpUtil.postFile(Constants.uploadUrl, new ProgressListener() {
             @Override
             public void onProgress(long currentBytes, long contentLength, boolean done) {
 
                 int progress = (int) (currentBytes * 100 / contentLength);
-
-                if (dialog == null) {
-                    dialog = new ProgressDialog(PublishNewsActivity.this);
-                    //设置进度条风格，风格为圆形，旋转的
-                    dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                    //设置ProgressDialog 标题
-                    dialog.setTitle("发布中");
-                    //设置ProgressDialog 提示信息
-                    dialog.setMessage("发布进度");
-                    //设置ProgressDialog的最大进度
-                    dialog.setMax(100);
-                    dialog.setCancelable(false);
-                }
-                if (!dialog.isShowing()) {
-                    dialog.show();
-                }
 
                 dialog.setProgress(progress);
             }

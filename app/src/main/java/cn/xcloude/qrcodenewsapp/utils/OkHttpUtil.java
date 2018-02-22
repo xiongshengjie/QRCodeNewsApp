@@ -43,7 +43,7 @@ public class OkHttpUtil {
 
         MultipartBody.Builder builder = new MultipartBody.Builder();
         builder.setType(MultipartBody.FORM);
-        for(File file : files){
+        for (File file : files) {
             builder.addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file));
         }
 

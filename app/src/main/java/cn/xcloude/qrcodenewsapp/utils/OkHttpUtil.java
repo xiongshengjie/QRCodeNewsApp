@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import cn.xcloude.qrcodenewsapp.constant.Constants;
+import cn.xcloude.qrcodenewsapp.entity.NewsCategory;
 import cn.xcloude.qrcodenewsapp.interfaces.ProgressListener;
+import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -54,6 +57,11 @@ public class OkHttpUtil {
         MultipartBody multipartBody = builder.build();
 
         Request request = new Request.Builder().url(url).post(new ProgressRequestBody(multipartBody, listener)).build();
+        okHttpClient.build().newCall(request).enqueue(callback);
+    }
+
+    public static void getAllCategory(Callback callback){
+        Request request = new Request.Builder().url(Constants.getAllCategory).build();
         okHttpClient.build().newCall(request).enqueue(callback);
     }
 }

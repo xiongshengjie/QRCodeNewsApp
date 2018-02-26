@@ -30,6 +30,7 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.PopupWindow;
 
 import cn.xcloude.qrcodenewsapp.R;
+import cn.xcloude.qrcodenewsapp.interfaces.KeyboardHeightObserver;
 
 /**
  * The keyboard height provider, this class uses a PopupWindow

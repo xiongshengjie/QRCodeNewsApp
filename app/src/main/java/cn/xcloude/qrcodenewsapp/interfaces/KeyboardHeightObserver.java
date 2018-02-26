@@ -15,7 +15,7 @@
  * along with Siebe Projects samples.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cn.xcloude.qrcodenewsapp.utils;
+package cn.xcloude.qrcodenewsapp.interfaces;
 
 /**
  * The observer that will be notified when the height of

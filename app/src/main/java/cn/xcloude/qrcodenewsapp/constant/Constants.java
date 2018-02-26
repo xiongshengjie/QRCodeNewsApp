@@ -17,4 +17,5 @@ public final class Constants {
     public static final String baseUrl = "http://192.168.1.100:8080/QRCodeNews";
 
     public static final String uploadUrl = baseUrl + "/news/publish";
+    public static final String getAllCategory = baseUrl + "/category/getAllCategory";
 }

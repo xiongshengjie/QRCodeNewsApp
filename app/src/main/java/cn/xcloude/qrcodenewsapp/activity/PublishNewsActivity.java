@@ -56,7 +56,7 @@ import cn.xcloude.qrcodenewsapp.interfaces.OnActionPerformListener;
 import cn.xcloude.qrcodenewsapp.interfaces.ProgressListener;
 import cn.xcloude.qrcodenewsapp.utils.FileIOUtil;
 import cn.xcloude.qrcodenewsapp.utils.GlideImageLoader;
-import cn.xcloude.qrcodenewsapp.utils.KeyboardHeightObserver;
+import cn.xcloude.qrcodenewsapp.interfaces.KeyboardHeightObserver;
 import cn.xcloude.qrcodenewsapp.utils.KeyboardHeightProvider;
 import cn.xcloude.qrcodenewsapp.utils.KeyboardUtils;
 import cn.xcloude.qrcodenewsapp.utils.OkHttpUtil;

@@ -244,6 +244,12 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                                 .show();
                         return;
                     }
+                    final String title = newsTitle.getText().toString();
+                    if(TextUtils.isEmpty(title)){
+                        Toast.makeText(PublishNewsActivity.this, "标题还没写哦", Toast.LENGTH_SHORT)
+                                .show();
+                        return;
+                    }
                     final AlertDialog.Builder publishDialog = new AlertDialog.Builder(PublishNewsActivity.this);
                     publishDialog.setTitle(R.string.title);
                     publishDialog.setMessage(R.string.publish_message);
@@ -251,8 +257,8 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             final Map<String, String> params = new HashMap<>();
-                            params.put("title", newsTitle.getText().toString());
-                            params.put("author", "xiongshengjie");
+                            params.put("title", title);
+                            params.put("author", "admin");
                             params.put("category", "1");
                             params.put("html", html);
 
@@ -317,13 +323,13 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Map<String, String> result = new Gson().fromJson(response.body().string(), new TypeToken<Map<String, String>>() {
+                Map<String, Object> result = new Gson().fromJson(response.body().string(), new TypeToken<Map<String, Object>>() {
                 }.getType());
-                int statu = Integer.parseInt(result.get("states").toString());
-                final String message = result.get("message").toString();
+                int statu = Integer.parseInt(result.get(Constants.STATUS).toString().substring(0,4));
+                final String message = result.get(Constants.MESSAGE).toString();
 
                 //发布成功
-                if (statu == getResources().getInteger(R.integer.success)) {
+                if (statu == Constants.SUCCESS) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

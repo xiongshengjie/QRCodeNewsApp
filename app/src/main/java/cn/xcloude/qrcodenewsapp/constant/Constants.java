@@ -6,8 +6,15 @@ package cn.xcloude.qrcodenewsapp.constant;
 
 public final class Constants {
 
-    //public static String baseUrl = "https://www.xcloude.cn/QRCodeNews";
-    public static String baseUrl = "http://192.168.0.109:8080/QRCodeNews";
+    public static final String STATUS = "status";
+    public static final String MESSAGE = "message";
 
-    public static String uploadUrl = baseUrl + "/news/publish";
+    public static final int ERROR = 4000;
+    public static final int SUCCESS = 2000;
+    public static final int SERVER_ERROR = 5000;
+
+    //public static String baseUrl = "https://www.xcloude.cn/QRCodeNews";
+    public static final String baseUrl = "http://192.168.1.100:8080/QRCodeNews";
+
+    public static final String uploadUrl = baseUrl + "/news/publish";
 }

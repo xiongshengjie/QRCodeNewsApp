@@ -481,7 +481,11 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
     public void onDestroy() {
         super.onDestroy();
         keyboardHeightProvider.close();
+        dialog = null;
+        files.clear();
     }
+
+
 
     @Override
     public void onKeyboardHeightChanged(int height, int orientation) {

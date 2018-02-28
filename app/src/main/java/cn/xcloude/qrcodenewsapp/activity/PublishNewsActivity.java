@@ -23,6 +23,7 @@ import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.even.mricheditor.ActionType;
@@ -75,6 +76,8 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
     LinearLayout llActionBarContainer;
     @BindView(R.id.news_title)
     EditText newsTitle;
+    @BindView(R.id.news_category)
+    Spinner newsCategory;
 
     private ProgressDialog dialog = null;
 
@@ -203,6 +206,8 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                 keyboardHeightProvider.start();
             }
         });
+
+        newsCategory
     }
 
     private class CustomWebChromeClient extends WebChromeClient {

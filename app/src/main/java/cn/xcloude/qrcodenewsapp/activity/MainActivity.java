@@ -3,6 +3,7 @@ package cn.xcloude.qrcodenewsapp.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -36,37 +37,27 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-        //分类初始化
-        OkHttpUtil.getAllCategory(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Toast.makeText(MainActivity.this, "获取分类失败", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Gson gson = new Gson();
-                Map<String, Object> result = gson.fromJson(response.body().string(), new TypeToken<Map<String, Object>>() {
-                }.getType());
-                if (Integer.parseInt(result.get(Constants.STATUS).toString().substring(0, 4)) == Constants.SUCCESS) {
-                    String allCategories = result.get("categories").toString();
-                    List<NewsCategory> categories = gson.fromJson(allCategories, new TypeToken<List<NewsCategory>>() {
-                    }.getType());
-                    if (categories != null && categories.size() > 0) {
-                        DataSupport.deleteAll(NewsCategory.class);
-                        for (NewsCategory category : categories) {
-                            category.save();
-                        }
-                    }
-                }
-            }
-        });
     }
 
     @OnClick(R.id.btn_publish)
     public void OnClickPublish() {
         Intent intent = new Intent(MainActivity.this, PublishNewsActivity.class);
         startActivity(intent);
+    }
+
+    /**
+     * 重写返回键，实现双击退出效果
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            //实现只在冷启动时显示启动页，即点击返回键与点击HOME键退出效果一致
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            startActivity(intent);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

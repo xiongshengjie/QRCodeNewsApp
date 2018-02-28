@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -37,6 +38,8 @@ import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
 import com.lzy.imagepicker.view.CropImageView;
 
+import org.litepal.crud.DataSupport;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,6 +53,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.xcloude.qrcodenewsapp.R;
 import cn.xcloude.qrcodenewsapp.constant.Constants;
+import cn.xcloude.qrcodenewsapp.entity.NewsCategory;
 import cn.xcloude.qrcodenewsapp.fragment.EditHyperlinkPopWindow;
 import cn.xcloude.qrcodenewsapp.fragment.EditTablePopWindow;
 import cn.xcloude.qrcodenewsapp.fragment.EditorMenuFragment;
@@ -82,6 +86,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
     private ProgressDialog dialog = null;
 
     private List<File> files = new ArrayList<>();
+    private List<NewsCategory> categories = new ArrayList<>();
 
     /**
      * The keyboard height provider
@@ -207,7 +212,10 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
             }
         });
 
-        newsCategory
+        categories = DataSupport.findAll(NewsCategory.class);
+        ArrayAdapter<NewsCategory> categoryArrayAdapter = new ArrayAdapter<NewsCategory>(this,android.R.layout.simple_spinner_item,categories);
+        categoryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        newsCategory.setAdapter(categoryArrayAdapter);
     }
 
     private class CustomWebChromeClient extends WebChromeClient {
@@ -255,6 +263,8 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                                 .show();
                         return;
                     }
+                    final Integer category = ((NewsCategory)newsCategory.getSelectedItem()).getCategoryId();
+
                     final AlertDialog.Builder publishDialog = new AlertDialog.Builder(PublishNewsActivity.this);
                     publishDialog.setTitle(R.string.title);
                     publishDialog.setMessage(R.string.publish_message);
@@ -264,7 +274,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                             final Map<String, String> params = new HashMap<>();
                             params.put("title", title);
                             params.put("author", "admin");
-                            params.put("category", "1");
+                            params.put("category", category.toString());
                             params.put("html", html);
 
                             runOnUiThread(new Runnable() {

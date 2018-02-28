@@ -33,4 +33,9 @@ public class NewsCategory extends DataSupport{
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName == null ? null : categoryName.trim();
     }
+
+    @Override
+    public String toString() {
+        return categoryName;
+    }
 }

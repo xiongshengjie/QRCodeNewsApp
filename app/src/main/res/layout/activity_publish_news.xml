@@ -72,6 +72,8 @@
                 android:id="@+id/news_category"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:textAlignment="center"
+                android:spinnerMode="dropdown"
                 android:layout_weight="1" />
 
         </LinearLayout>

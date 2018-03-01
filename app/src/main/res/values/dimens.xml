@@ -5,4 +5,6 @@
   <dimen name="text_medium">14sp</dimen>
   <dimen name="text_large">18sp</dimen>
   <dimen name="text_super">32sp</dimen>
+  <dimen name="corner_radius">240dp</dimen>
+  <dimen name="corner_padding">12dp</dimen>
 </resources>

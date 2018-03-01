@@ -2,6 +2,7 @@ package cn.xcloude.qrcodenewsapp.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.widget.Toast;
@@ -25,10 +26,19 @@ import okhttp3.Response;
 
 public class StartActivity extends AppCompatActivity {
 
+    private Handler handler = new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getAllCategory();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                gotoMain();
+            }
+        },2000);
+
     }
 
     private void getAllCategory() {
@@ -42,7 +52,6 @@ public class StartActivity extends AppCompatActivity {
                         Toast.makeText(StartActivity.this, R.string.get_category_error, Toast.LENGTH_SHORT).show();
                     }
                 });
-                gotoMain();
             }
 
             @Override
@@ -61,7 +70,6 @@ public class StartActivity extends AppCompatActivity {
                         }
                     }
                 }
-                gotoMain();
             }
         });
     }
@@ -70,9 +78,18 @@ public class StartActivity extends AppCompatActivity {
      * 前往主页
      */
     private void gotoMain() {
-        Intent intent = new Intent(StartActivity.this, MainActivity.class);
+        Intent intent = new Intent(StartActivity.this, LoginMainActivity.class);
         startActivity(intent);
         finish();
+        overridePendingTransition(0, 0);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(handler != null){
+            handler.removeCallbacksAndMessages(null);
+        }
+        super.onDestroy();
     }
 
     /**

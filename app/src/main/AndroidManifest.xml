@@ -28,7 +28,9 @@
             android:name=".activity.PublishNewsActivity"
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity android:name=".activity.MainActivity" />
-        <activity android:name=".activity.LoginMainActivity"></activity>
+        <activity android:name=".activity.LoginMainActivity" />
+        <activity android:name=".activity.RegisterActivity" />
+        <activity android:name=".activity.LoginActivity"></activity>
     </application>
 
 </manifest>

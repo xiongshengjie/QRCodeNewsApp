@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
@@ -39,18 +40,24 @@ public class LoginMainActivity extends AppCompatActivity {
         initAnims();
     }
 
-    private void initViews(){
+    private void initViews() {
         tvNone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginMainActivity.this,MainActivity.class);
+                Intent intent = new Intent(LoginMainActivity.this, MainActivity.class);
                 startActivity(intent);
-                LoginMainActivity.this.finish();
+            }
+        });
+
+        tvLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
     }
 
-    private void initAnims(){
+    private void initAnims() {
         //初始化底部注册、登录的按钮动画
         //以控件自身所在的位置为原点，从下方距离原点200像素的位置移动到原点
         ObjectAnimator tranLogin = ObjectAnimator.ofFloat(tvLogin, "translationY", 200, 0);

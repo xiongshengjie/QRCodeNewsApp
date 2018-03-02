@@ -1,8 +1,10 @@
 package cn.xcloude.qrcodenewsapp.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.Toast;
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && (!TextUtils.isEmpty(getSharedPreferences("User", Context.MODE_PRIVATE).getString("UserId", null)))) {
             //实现只在冷启动时显示启动页，即点击返回键与点击HOME键退出效果一致
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

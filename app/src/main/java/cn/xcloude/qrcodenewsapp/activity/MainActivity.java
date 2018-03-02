@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 重写返回键，实现双击退出效果
+     * 重写返回键
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

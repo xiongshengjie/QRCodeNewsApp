@@ -5,9 +5,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -33,7 +35,19 @@ public class LoginMainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_main);
         ButterKnife.bind(this);
+        initViews();
         initAnims();
+    }
+
+    private void initViews(){
+        tvNone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginMainActivity.this,MainActivity.class);
+                startActivity(intent);
+                LoginMainActivity.this.finish();
+            }
+        });
     }
 
     private void initAnims(){
@@ -82,5 +96,21 @@ public class LoginMainActivity extends AppCompatActivity {
                 bottomAnim.start();
             }
         });
+    }
+
+    /**
+     * 重写返回键
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            //实现只在冷启动时显示启动页，即点击返回键与点击HOME键退出效果一致
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            startActivity(intent);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

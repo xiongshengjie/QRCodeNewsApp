@@ -64,6 +64,7 @@ import cn.xcloude.qrcodenewsapp.utils.GlideImageLoader;
 import cn.xcloude.qrcodenewsapp.interfaces.KeyboardHeightObserver;
 import cn.xcloude.qrcodenewsapp.utils.KeyboardHeightProvider;
 import cn.xcloude.qrcodenewsapp.utils.KeyboardUtils;
+import cn.xcloude.qrcodenewsapp.utils.LogUtil;
 import cn.xcloude.qrcodenewsapp.utils.OkHttpUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -71,6 +72,8 @@ import okhttp3.Response;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class PublishNewsActivity extends AppCompatActivity implements KeyboardHeightObserver {
+
+    private static String TAG = "PublishNewsActivity";
 
     @BindView(R.id.wv_container)
     WebView mWebView;
@@ -213,7 +216,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
         });
 
         categories = DataSupport.findAll(NewsCategory.class);
-        ArrayAdapter<NewsCategory> categoryArrayAdapter = new ArrayAdapter<NewsCategory>(this,android.R.layout.simple_spinner_item,categories);
+        ArrayAdapter<NewsCategory> categoryArrayAdapter = new ArrayAdapter<NewsCategory>(this, android.R.layout.simple_spinner_item, categories);
         categoryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         newsCategory.setAdapter(categoryArrayAdapter);
     }
@@ -258,12 +261,12 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                         return;
                     }
                     final String title = newsTitle.getText().toString();
-                    if(TextUtils.isEmpty(title)){
+                    if (TextUtils.isEmpty(title)) {
                         Toast.makeText(PublishNewsActivity.this, "标题还没写哦", Toast.LENGTH_SHORT)
                                 .show();
                         return;
                     }
-                    final Integer category = ((NewsCategory)newsCategory.getSelectedItem()).getCategoryId();
+                    final Integer category = ((NewsCategory) newsCategory.getSelectedItem()).getCategoryId();
 
                     final AlertDialog.Builder publishDialog = new AlertDialog.Builder(PublishNewsActivity.this);
                     publishDialog.setTitle(R.string.title);
@@ -340,7 +343,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
             public void onResponse(Call call, Response response) throws IOException {
                 Map<String, Object> result = new Gson().fromJson(response.body().string(), new TypeToken<Map<String, Object>>() {
                 }.getType());
-                int statu = Integer.parseInt(result.get(Constants.STATUS).toString().substring(0,4));
+                int statu = Integer.parseInt(result.get(Constants.STATUS).toString().substring(0, 4));
                 final String message = result.get(Constants.MESSAGE).toString();
 
                 //发布成功
@@ -501,7 +504,6 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
     }
 
 
-
     @Override
     public void onKeyboardHeightChanged(int height, int orientation) {
         isKeyboardShowing = height > 0;
@@ -527,7 +529,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                     instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_SPACE);
                     instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_DEL);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    LogUtil.e(TAG, "错误" + e);
                 }
             }
         }).start();

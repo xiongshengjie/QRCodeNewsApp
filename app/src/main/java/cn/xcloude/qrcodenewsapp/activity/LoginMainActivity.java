@@ -13,6 +13,7 @@ import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,6 +31,10 @@ public class LoginMainActivity extends AppCompatActivity {
     ImageView ivLogo;
     @BindView(R.id.tv_none)
     TextView tvNone;
+    @BindView(R.id.et_login_name)
+    EditText loginName;
+    @BindView(R.id.et_login_password)
+    EditText loginPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +57,17 @@ public class LoginMainActivity extends AppCompatActivity {
         tvLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(LoginMainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
+        tvRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginMainActivity.this, RegisterActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -63,14 +78,18 @@ public class LoginMainActivity extends AppCompatActivity {
         ObjectAnimator tranLogin = ObjectAnimator.ofFloat(tvLogin, "translationY", 200, 0);
         ObjectAnimator tranRegister = ObjectAnimator.ofFloat(tvRegister, "translationY", 200, 0);
         ObjectAnimator tranNone = ObjectAnimator.ofFloat(tvNone, "translationY", 200, 0);
+        ObjectAnimator tranName = ObjectAnimator.ofFloat(loginName, "translationY", 200, 0);
+        ObjectAnimator tranPassword = ObjectAnimator.ofFloat(loginPassword, "translationY", 200, 0);
         //将注册、登录的控件alpha属性从0变到1
         ObjectAnimator alphaLogin = ObjectAnimator.ofFloat(tvLogin, "alpha", 0, 1);
         ObjectAnimator alphaRegister = ObjectAnimator.ofFloat(tvRegister, "alpha", 0, 1);
         ObjectAnimator alphaNone = ObjectAnimator.ofFloat(tvNone, "alpha", 0, 1);
+        ObjectAnimator alphaName = ObjectAnimator.ofFloat(loginName, "alpha", 0, 1);
+        ObjectAnimator alphaPassword = ObjectAnimator.ofFloat(loginPassword, "alpha", 0, 1);
         final AnimatorSet bottomAnim = new AnimatorSet();
         bottomAnim.setDuration(1000);
         //同时执行控件平移和alpha渐变动画
-        bottomAnim.play(tranLogin).with(tranRegister).with(alphaLogin).with(alphaRegister).with(tranNone).with(alphaNone);
+        bottomAnim.play(tranLogin).with(tranRegister).with(alphaLogin).with(alphaRegister).with(tranNone).with(alphaNone).with(tranName).with(alphaName).with(tranPassword).with(alphaPassword);
 
         //获取屏幕高度
         WindowManager manager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);

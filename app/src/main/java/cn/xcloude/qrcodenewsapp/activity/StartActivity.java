@@ -1,9 +1,11 @@
 package cn.xcloude.qrcodenewsapp.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
@@ -35,9 +37,14 @@ public class StartActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                gotoMain();
+                if (!TextUtils.isEmpty(getSharedPreferences("User", Context.MODE_PRIVATE).getString("UserId", null))) {
+                    gotoMain(true);
+                }else {
+                    gotoMain(false);
+                }
+
             }
-        },2000);
+        }, 2000);
 
     }
 
@@ -77,8 +84,13 @@ public class StartActivity extends AppCompatActivity {
     /**
      * 前往主页
      */
-    private void gotoMain() {
-        Intent intent = new Intent(StartActivity.this, LoginMainActivity.class);
+    private void gotoMain(boolean flag) {
+        Intent intent;
+        if (flag) {
+            intent = new Intent(StartActivity.this, MainActivity.class);
+        } else {
+            intent = new Intent(StartActivity.this, LoginMainActivity.class);
+        }
         startActivity(intent);
         finish();
         overridePendingTransition(0, 0);
@@ -86,7 +98,7 @@ public class StartActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if(handler != null){
+        if (handler != null) {
             handler.removeCallbacksAndMessages(null);
         }
         super.onDestroy();

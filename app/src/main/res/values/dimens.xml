@@ -5,6 +5,12 @@
   <dimen name="text_medium">14sp</dimen>
   <dimen name="text_large">18sp</dimen>
   <dimen name="text_super">32sp</dimen>
-  <dimen name="corner_radius">240dp</dimen>
+  <dimen name="corner_radius">12dp</dimen>
   <dimen name="corner_padding">12dp</dimen>
+  <dimen name="login_width">250dp</dimen>
+  <dimen name="login_height">45dp</dimen>
+  <dimen name="login_button_blank">23dp</dimen>
+  <dimen name="login_bottom_blank">40dp</dimen>
+  <dimen name="login_edit_blank">40dp</dimen>
+  <dimen name="login_text_size">15sp</dimen>
 </resources>

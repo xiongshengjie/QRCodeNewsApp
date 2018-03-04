@@ -7,47 +7,66 @@
     android:background="@color/white"
     tools:context="cn.xcloude.qrcodenewsapp.activity.LoginMainActivity">
 
+    <EditText
+        android:id="@+id/et_login_name"
+        android:layout_width="@dimen/login_width"
+        android:layout_height="@dimen/login_height"
+        android:layout_above="@+id/et_login_password"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/login_button_blank"
+        android:alpha="0"
+        android:hint="@string/login_username_hint"/>
+    
+    <EditText
+        android:id="@+id/et_login_password"
+        android:layout_width="@dimen/login_width"
+        android:layout_height="@dimen/login_height"
+        android:layout_above="@id/tv_login"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/login_edit_blank"
+        android:alpha="0"
+        android:hint="@string/login_password_hint"
+        android:inputType="textPassword" />
+
     <TextView
         android:id="@+id/tv_login"
-        android:layout_width="250dp"
-        android:layout_height="45dp"
+        android:layout_width="@dimen/login_width"
+        android:layout_height="@dimen/login_height"
         android:layout_above="@+id/tv_register"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="23dp"
+        android:layout_marginBottom="@dimen/login_button_blank"
         android:alpha="0"
         android:gravity="center"
         android:background="@drawable/shape_login"
-        android:text="登录"
+        android:text="@string/login"
         android:textColor="@android:color/white"
-        android:textSize="15sp" />
+        android:textSize="@dimen/login_text_size" />
 
     <TextView
         android:id="@+id/tv_register"
-        android:layout_width="250dp"
-        android:layout_height="45dp"
+        android:layout_width="@dimen/login_width"
+        android:layout_height="@dimen/login_height"
         android:layout_above="@id/tv_none"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="23dp"
         android:alpha="0"
         android:gravity="center"
         android:background="@drawable/shape_register"
-        android:text="注册"
+        android:text="@string/register"
         android:textColor="@android:color/white"
-        android:textSize="15sp" />
+        android:textSize="@dimen/login_text_size" />
 
     <TextView
         android:id="@+id/tv_none"
-        android:layout_width="250dp"
-        android:layout_height="45dp"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/login_height"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="23dp"
+        android:layout_marginBottom="@dimen/login_bottom_blank"
         android:alpha="0"
         android:gravity="center"
-        android:background="@drawable/shape_none"
-        android:text="直接看新闻"
-        android:textColor="@android:color/white"
-        android:textSize="15sp"/>
+        android:layout_alignRight="@+id/tv_register"
+        android:text="@string/watch_news_direct"
+        android:textColor="@color/blue"
+        android:textSize="@dimen/login_text_size"/>
 
     <ImageView
         android:id="@+id/iv_logo"

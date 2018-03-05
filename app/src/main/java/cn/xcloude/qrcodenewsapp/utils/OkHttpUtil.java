@@ -7,10 +7,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import cn.xcloude.qrcodenewsapp.constant.Constants;
-import cn.xcloude.qrcodenewsapp.entity.NewsCategory;
 import cn.xcloude.qrcodenewsapp.interfaces.ProgressListener;
-import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -30,7 +29,7 @@ public class OkHttpUtil {
             .writeTimeout(10000, TimeUnit.MILLISECONDS);
 
     //上传文件
-    public static void postFile(String url, final ProgressListener listener, Callback callback, Map<String,String> params, List<File> files) {
+    public static void postFile(String url, final ProgressListener listener, Callback callback, Map<String, String> params, List<File> files) {
 
         okHttpClient.addInterceptor(new Interceptor() {
             @Override
@@ -38,7 +37,7 @@ public class OkHttpUtil {
                 Request original = chain.request();
 
                 Request request = original.newBuilder()
-                        .method(original.method(), new ProgressRequestBody(original.body(),listener))
+                        .method(original.method(), new ProgressRequestBody(original.body(), listener))
                         .build();
                 return chain.proceed(request);
             }
@@ -50,8 +49,8 @@ public class OkHttpUtil {
             builder.addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file));
         }
 
-        for(String key:params.keySet()){
-            builder.addFormDataPart(key,params.get(key));
+        for (String key : params.keySet()) {
+            builder.addFormDataPart(key, params.get(key));
         }
 
         MultipartBody multipartBody = builder.build();
@@ -60,8 +59,14 @@ public class OkHttpUtil {
         okHttpClient.build().newCall(request).enqueue(callback);
     }
 
-    public static void getAllCategory(Callback callback){
+    public static void getAllCategory(Callback callback) {
         Request request = new Request.Builder().url(Constants.getAllCategory).build();
+        okHttpClient.build().newCall(request).enqueue(callback);
+    }
+
+    public static void login(String userName, String passWord,Callback callback) {
+        RequestBody requestBody = new FormBody.Builder().add("userName", userName).add("passWord", passWord).build();
+        Request request = new Request.Builder().url(Constants.login).post(requestBody).build();
         okHttpClient.build().newCall(request).enqueue(callback);
     }
 }

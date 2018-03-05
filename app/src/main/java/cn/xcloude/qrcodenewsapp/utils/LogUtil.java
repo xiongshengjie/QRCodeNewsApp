@@ -17,31 +17,31 @@ public class LogUtil {
     public static int level = DEBUG;
 
     public static void v(String tag,String msg){
-        if(level < VERBOSE){
+        if(level <= VERBOSE){
             Log.v(tag,msg);
         }
     }
 
     public static void d(String tag,String msg){
-        if(level < DEBUG){
+        if(level <= DEBUG){
             Log.v(tag,msg);
         }
     }
 
     public static void I(String tag,String msg){
-        if(level < INFO){
+        if(level <= INFO){
             Log.v(tag,msg);
         }
     }
 
     public static void w(String tag,String msg){
-        if(level < WARN){
+        if(level <= WARN){
             Log.v(tag,msg);
         }
     }
 
     public static void e(String tag,String msg){
-        if(level < ERROR){
+        if(level <= ERROR){
             Log.v(tag,msg);
         }
     }

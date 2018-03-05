@@ -21,6 +21,7 @@ import java.util.Map;
 import cn.xcloude.qrcodenewsapp.R;
 import cn.xcloude.qrcodenewsapp.constant.Constants;
 import cn.xcloude.qrcodenewsapp.entity.NewsCategory;
+import cn.xcloude.qrcodenewsapp.entity.ResponseResult;
 import cn.xcloude.qrcodenewsapp.utils.OkHttpUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -64,12 +65,9 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Gson gson = new Gson();
-                Map<String, Object> result = gson.fromJson(response.body().string(), new TypeToken<Map<String, Object>>() {
-                }.getType());
-                if (Integer.parseInt(result.get(Constants.STATUS).toString().substring(0, 4)) == Constants.SUCCESS) {
-                    String allCategories = result.get("categories").toString();
-                    List<NewsCategory> categories = gson.fromJson(allCategories, new TypeToken<List<NewsCategory>>() {
-                    }.getType());
+                ResponseResult<List<NewsCategory>> serverResponse = gson.fromJson(response.body().string(),new TypeToken<ResponseResult<List<NewsCategory>>>(){}.getType());
+                if (serverResponse.getStatus() == Constants.SUCCESS) {
+                    List<NewsCategory> categories = serverResponse.getResult();
                     if (categories != null && categories.size() > 0) {
                         DataSupport.deleteAll(NewsCategory.class);
                         for (NewsCategory category : categories) {

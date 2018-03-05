@@ -6,20 +6,36 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.xcloude.qrcodenewsapp.R;
+import cn.xcloude.qrcodenewsapp.constant.Constants;
+import cn.xcloude.qrcodenewsapp.entity.ResponseResult;
+import cn.xcloude.qrcodenewsapp.entity.User;
+import cn.xcloude.qrcodenewsapp.utils.OkHttpUtil;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class LoginMainActivity extends AppCompatActivity {
 
@@ -57,9 +73,65 @@ public class LoginMainActivity extends AppCompatActivity {
         tvLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginMainActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                String username = loginName.getText().toString();
+                String password = loginPassword.getText().toString();
+                if (TextUtils.isEmpty(username)) {
+                    Toast.makeText(LoginMainActivity.this, R.string.not_input_username, Toast.LENGTH_SHORT).show();
+                    loginName.requestFocus();
+                    imm.showSoftInput(loginName, 0);
+                    return;
+                }
+                if (TextUtils.isEmpty(password)) {
+                    Toast.makeText(LoginMainActivity.this, R.string.not_input_password, Toast.LENGTH_SHORT).show();
+                    loginPassword.requestFocus();
+                    imm.showSoftInput(loginPassword, 0);
+                    return;
+                }
+                OkHttpUtil.login(username, password, new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(LoginMainActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        Gson gson = new Gson();
+                        ResponseResult<User> serverResponse = gson.fromJson(response.body().string(), new TypeToken<ResponseResult<User>>() {
+                        }.getType());
+                        int statu = serverResponse.getStatus();
+                        final String message = serverResponse.getMessage();
+                        if (statu == Constants.SUCCESS) {
+                            User user = serverResponse.getResult();
+                            SharedPreferences userShared = getSharedPreferences("User", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = userShared.edit();
+                            editor.putString("userId",user.getUserId());
+                            editor.putString("userName",user.getUserName());
+                            editor.putString("userPassWord",user.getUserPassword());
+                            editor.putString("userNickName",user.getUserNickname());
+                            editor.putString("userMobile",user.getUserMobile());
+                            editor.putInt("userSex",user.getUserSex());
+                            editor.putString("userDescription",user.getUserDescription());
+                            editor.putString("userHead",user.getUserHead());
+                            editor.commit();
+                            Intent intent = new Intent(LoginMainActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(LoginMainActivity.this, message, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                });
             }
         });
 

@@ -24,12 +24,15 @@ import butterknife.OnClick;
 import cn.xcloude.qrcodenewsapp.R;
 import cn.xcloude.qrcodenewsapp.constant.Constants;
 import cn.xcloude.qrcodenewsapp.entity.NewsCategory;
+import cn.xcloude.qrcodenewsapp.utils.LogUtil;
 import cn.xcloude.qrcodenewsapp.utils.OkHttpUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static String TAG = "MainActivity";
 
     @BindView(R.id.btn_publish)
     Button publishButton;
@@ -52,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && (!TextUtils.isEmpty(getSharedPreferences("User", Context.MODE_PRIVATE).getString("UserId", null)))) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && (!TextUtils.isEmpty(getSharedPreferences("User", Context.MODE_PRIVATE).getString("userId", null)))) {
             //实现只在冷启动时显示启动页，即点击返回键与点击HOME键退出效果一致
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

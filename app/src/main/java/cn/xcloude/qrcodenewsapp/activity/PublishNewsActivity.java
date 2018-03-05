@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Instrumentation;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -53,7 +54,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.xcloude.qrcodenewsapp.R;
 import cn.xcloude.qrcodenewsapp.constant.Constants;
+import cn.xcloude.qrcodenewsapp.entity.News;
 import cn.xcloude.qrcodenewsapp.entity.NewsCategory;
+import cn.xcloude.qrcodenewsapp.entity.ResponseResult;
 import cn.xcloude.qrcodenewsapp.fragment.EditHyperlinkPopWindow;
 import cn.xcloude.qrcodenewsapp.fragment.EditTablePopWindow;
 import cn.xcloude.qrcodenewsapp.fragment.EditorMenuFragment;
@@ -276,7 +279,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                         public void onClick(DialogInterface dialogInterface, int i) {
                             final Map<String, String> params = new HashMap<>();
                             params.put("title", title);
-                            params.put("author", "admin");
+                            params.put("author", getSharedPreferences("User", Context.MODE_PRIVATE).getString("userId",null));
                             params.put("category", category.toString());
                             params.put("html", html);
 
@@ -318,7 +321,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
             dialog.show();
         }
 
-        OkHttpUtil.postFile(Constants.uploadUrl, new ProgressListener() {
+        OkHttpUtil.postFile(Constants.upload, new ProgressListener() {
             @Override
             public void onProgress(long currentBytes, long contentLength, boolean done) {
 
@@ -333,7 +336,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        dialog.setMessage(getString(R.string.server_error));
+                        dialog.setMessage(getString(R.string.network_error));
                     }
                 });
                 dialog.setCancelable(true);
@@ -341,13 +344,12 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Map<String, Object> result = new Gson().fromJson(response.body().string(), new TypeToken<Map<String, Object>>() {
-                }.getType());
-                int statu = Integer.parseInt(result.get(Constants.STATUS).toString().substring(0, 4));
-                final String message = result.get(Constants.MESSAGE).toString();
+                ResponseResult<News> result = new Gson().fromJson(response.body().string(),new TypeToken<ResponseResult<News>>(){}.getType());
+                int status = result.getStatus();
+                final String message = result.getMessage();
 
                 //发布成功
-                if (statu == Constants.SUCCESS) {
+                if (status == Constants.SUCCESS) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

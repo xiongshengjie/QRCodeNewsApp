@@ -19,11 +19,7 @@ public class User {
 
     private String userHead;
 
-    private Date createDatetime;
-
-    private Date updateDatetime;
-
-    public User(String userId, String userName, String userPassword, String userNickname, String userMobile, Integer userSex, String userDescription, String userHead, Date createDatetime, Date updateDatetime) {
+    public User(String userId, String userName, String userPassword, String userNickname, String userMobile, Integer userSex, String userDescription, String userHead) {
         this.userId = userId;
         this.userName = userName;
         this.userPassword = userPassword;
@@ -32,8 +28,6 @@ public class User {
         this.userSex = userSex;
         this.userDescription = userDescription;
         this.userHead = userHead;
-        this.createDatetime = createDatetime;
-        this.updateDatetime = updateDatetime;
     }
 
     public User() {
@@ -102,21 +96,5 @@ public class User {
 
     public void setUserHead(String userHead) {
         this.userHead = userHead == null ? null : userHead.trim();
-    }
-
-    public Date getCreateDatetime() {
-        return createDatetime;
-    }
-
-    public void setCreateDatetime(Date createDatetime) {
-        this.createDatetime = createDatetime;
-    }
-
-    public Date getUpdateDatetime() {
-        return updateDatetime;
-    }
-
-    public void setUpdateDatetime(Date updateDatetime) {
-        this.updateDatetime = updateDatetime;
     }
 }

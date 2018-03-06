@@ -56,6 +56,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
+                    android:inputType="number"
                     android:hint="@string/sms_code" />
 
                 <TextView
@@ -81,7 +82,7 @@
                 android:layout_marginBottom="@dimen/login_button_blank"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:text="@string/register"
+                android:text="@string/next_step"
                 android:background="@drawable/shape_login"
                 android:textSize="@dimen/login_text_size"/>
 

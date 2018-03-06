@@ -1,6 +1,9 @@
 package cn.xcloude.qrcodenewsapp.activity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -40,12 +43,26 @@ public class RegisterActivity extends AppCompatActivity {
     @BindView(R.id.et_sms_code)
     TextView etSmsCode;
 
+    private TimeCount timeCount;
+    private long remainTime;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("RemainTime",Context.MODE_PRIVATE);
+        remainTime = preferences.getLong("remainTime",0);
+        long lastCurrentTime = preferences.getLong("currentTime",0);
+        if(remainTime > 0 && lastCurrentTime > 0){
+            long currentTime = System.currentTimeMillis();
+            if(remainTime > (currentTime - lastCurrentTime)/1000){
+                remainTime -= (currentTime - lastCurrentTime)/1000;
+                timeCount = new TimeCount(remainTime,1000);
+                timeCount.start();
+            }
+        }
         init();
     }
 
@@ -88,8 +105,14 @@ public class RegisterActivity extends AppCompatActivity {
                         final String message = serverResponse.getMessage();
                         if (serverResponse.getStatus() == Constants.SUCCESS) {
                             //申请验证码成功
-
-                        }else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    timeCount = new TimeCount(120000,1000);
+                                    timeCount.start();
+                                }
+                            });
+                        } else {
                             //申请验证码失败
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -103,5 +126,45 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    class TimeCount extends CountDownTimer {
+
+        public TimeCount(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        //计时过程显示
+        @Override
+        public void onTick(long millisUntilFinished) {
+            remainTime = millisUntilFinished / 1000;
+            tvGetSmsCode.setText(remainTime + "");
+            tvGetSmsCode.setClickable(false);
+            tvGetSmsCode.setBackground(getDrawable(R.drawable.shape_sms_code_clicked));
+        }
+
+        //计时完成触发
+        @Override
+        public void onFinish() {
+            tvGetSmsCode.setText(R.string.get_sms_code);
+            tvGetSmsCode.setClickable(true);
+            tvGetSmsCode.setBackground(getDrawable(R.drawable.shape_sms_code));
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(remainTime > 0) {
+            SharedPreferences preferences = getSharedPreferences("RemainTime", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putLong("remainTime", remainTime);
+            editor.putLong("currentTime", System.currentTimeMillis());
+            editor.commit();
+        }
+        if(timeCount != null){
+            timeCount.cancel();
+            timeCount = null;
+        }
     }
 }

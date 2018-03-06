@@ -28,7 +28,7 @@ public class OkHttpUtil {
             .readTimeout(10000, TimeUnit.MILLISECONDS)
             .writeTimeout(10000, TimeUnit.MILLISECONDS);
 
-    //上传文件
+    //发布新闻接口
     public static void postFile(String url, final ProgressListener listener, Callback callback, Map<String, String> params, List<File> files) {
 
         okHttpClient.addInterceptor(new Interceptor() {
@@ -59,14 +59,23 @@ public class OkHttpUtil {
         okHttpClient.build().newCall(request).enqueue(callback);
     }
 
+    //获取分类接口
     public static void getAllCategory(Callback callback) {
         Request request = new Request.Builder().url(Constants.getAllCategory).build();
         okHttpClient.build().newCall(request).enqueue(callback);
     }
 
+    //登录
     public static void login(String userName, String passWord,Callback callback) {
         RequestBody requestBody = new FormBody.Builder().add("userName", userName).add("passWord", passWord).build();
         Request request = new Request.Builder().url(Constants.login).post(requestBody).build();
+        okHttpClient.build().newCall(request).enqueue(callback);
+    }
+
+    //获取验证码
+    public static void getSmsCode(String mobile , Callback callback){
+        RequestBody requestBody = new FormBody.Builder().add("userMobile",mobile).build();
+        Request request = new Request.Builder().url(Constants.getSmsCode).post(requestBody).build();
         okHttpClient.build().newCall(request).enqueue(callback);
     }
 }

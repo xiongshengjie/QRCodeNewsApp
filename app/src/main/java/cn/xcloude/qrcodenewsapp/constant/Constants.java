@@ -20,4 +20,5 @@ public final class Constants {
     public static final String upload = baseUrl + "/news/publish";
     public static final String getAllCategory = baseUrl + "/category/getAllCategory";
     public static final String login = baseUrl + "/user/login";
+    public static final String getSmsCode = baseUrl + "/user/getSmsCode";
 }

@@ -33,18 +33,44 @@
             android:layout_weight="2">
 
             <EditText
+                android:id="@+id/et_mobile"
                 android:layout_width="@dimen/login_width"
                 android:layout_height="@dimen/login_height"
                 android:layout_centerHorizontal="true"
-                android:hint="@string/user_mobile" />
-
-            <EditText
-                android:layout_width="@dimen/login_width"
-                android:layout_height="@dimen/login_height"
-                android:layout_centerHorizontal="true"
-                android:hint="@string/sms_code"
-                android:layout_above="@+id/tv_register"
+                android:hint="@string/user_mobile"
+                android:inputType="phone"
+                android:layout_above="@+id/ll_sms_code"
                 android:layout_marginBottom="@dimen/login_button_blank"/>
+
+            <LinearLayout
+                android:id="@+id/ll_sms_code"
+                android:layout_width="@dimen/login_width"
+                android:layout_height="@dimen/login_height"
+                android:layout_centerHorizontal="true"
+                android:layout_above="@+id/tv_register"
+                android:orientation="horizontal"
+                android:layout_marginBottom="@dimen/login_button_blank">
+
+                <EditText
+                    android:id="@+id/et_sms_code"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:hint="@string/sms_code" />
+
+                <TextView
+                    android:id="@+id/tv_get_sms_code"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:text="@string/get_sms_code"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/shape_sms_code"
+                    android:textSize="@dimen/get_sms_size"/>
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tv_register"
@@ -55,6 +81,7 @@
                 android:layout_marginBottom="@dimen/login_button_blank"
                 android:gravity="center"
                 android:textColor="@color/white"
+                android:text="@string/register"
                 android:background="@drawable/shape_login"
                 android:textSize="@dimen/login_text_size"/>
 

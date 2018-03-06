@@ -88,6 +88,9 @@ public class LoginMainActivity extends AppCompatActivity {
                     imm.showSoftInput(loginPassword, 0);
                     return;
                 }
+
+
+
                 OkHttpUtil.login(username, password, new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {

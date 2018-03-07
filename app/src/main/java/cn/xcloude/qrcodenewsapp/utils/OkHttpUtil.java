@@ -66,16 +66,23 @@ public class OkHttpUtil {
     }
 
     //登录
-    public static void login(String userName, String passWord,Callback callback) {
+    public static void login(String userName, String passWord, Callback callback) {
         RequestBody requestBody = new FormBody.Builder().add("userName", userName).add("passWord", passWord).build();
         Request request = new Request.Builder().url(Constants.login).post(requestBody).build();
         okHttpClient.build().newCall(request).enqueue(callback);
     }
 
     //获取验证码
-    public static void getSmsCode(String mobile , Callback callback){
-        RequestBody requestBody = new FormBody.Builder().add("userMobile",mobile).build();
+    public static void getSmsCode(String mobile, Callback callback) {
+        RequestBody requestBody = new FormBody.Builder().add("userMobile", mobile).build();
         Request request = new Request.Builder().url(Constants.getSmsCode).post(requestBody).build();
+        okHttpClient.build().newCall(request).enqueue(callback);
+    }
+
+    //验证验证码
+    public static void checkSmsCode(String mobile, String smsCode, Callback callback) {
+        RequestBody requestBody = new FormBody.Builder().add("userMobile",mobile).add("smsCode",smsCode).build();
+        Request request = new Request.Builder().url(Constants.checkSmsCode).post(requestBody).build();
         okHttpClient.build().newCall(request).enqueue(callback);
     }
 }

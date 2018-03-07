@@ -32,6 +32,9 @@
         <activity
             android:name=".activity.RegisterActivity"
             android:label="@string/register" />
+        <activity
+            android:name=".activity.ImproveInformationActivity"
+            android:label="@string/improve_information"></activity>
     </application>
 
 </manifest>

@@ -57,23 +57,33 @@ public class StartActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(StartActivity.this, R.string.get_category_error, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(StartActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Gson gson = new Gson();
-                ResponseResult<List<NewsCategory>> serverResponse = gson.fromJson(response.body().string(),new TypeToken<ResponseResult<List<NewsCategory>>>(){}.getType());
-                if (serverResponse.getStatus() == Constants.SUCCESS) {
-                    List<NewsCategory> categories = serverResponse.getResult();
-                    if (categories != null && categories.size() > 0) {
-                        DataSupport.deleteAll(NewsCategory.class);
-                        for (NewsCategory category : categories) {
-                            category.save();
+                if(response.code() == 200) {
+                    Gson gson = new Gson();
+                    ResponseResult<List<NewsCategory>> serverResponse = gson.fromJson(response.body().string(), new TypeToken<ResponseResult<List<NewsCategory>>>() {
+                    }.getType());
+                    if (serverResponse.getStatus() == Constants.SUCCESS) {
+                        List<NewsCategory> categories = serverResponse.getResult();
+                        if (categories != null && categories.size() > 0) {
+                            DataSupport.deleteAll(NewsCategory.class);
+                            for (NewsCategory category : categories) {
+                                category.save();
+                            }
                         }
                     }
+                }else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(StartActivity.this, R.string.server_error, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         });

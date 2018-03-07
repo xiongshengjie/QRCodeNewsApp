@@ -344,24 +344,35 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                ResponseResult<News> result = new Gson().fromJson(response.body().string(),new TypeToken<ResponseResult<News>>(){}.getType());
-                int status = result.getStatus();
-                final String message = result.getMessage();
+                if(response.code() == 200) {
+                    ResponseResult<News> result = new Gson().fromJson(response.body().string(), new TypeToken<ResponseResult<News>>() {
+                    }.getType());
+                    int status = result.getStatus();
+                    final String message = result.getMessage();
 
-                //发布成功
-                if (status == Constants.SUCCESS) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            dialog.setMessage(message);
-                        }
-                    });
-                    dialog.dismiss();
-                    //成功之后的操作
+                    //发布成功
+                    if (status == Constants.SUCCESS) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialog.setMessage(message);
+                            }
+                        });
+                        dialog.dismiss();
+                        //成功之后的操作
 
 
-                } else {
-                    //发布失败
+                    } else {
+                        //发布失败
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialog.setMessage(getString(R.string.server_error));
+                            }
+                        });
+                        dialog.setCancelable(true);
+                    }
+                }else {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

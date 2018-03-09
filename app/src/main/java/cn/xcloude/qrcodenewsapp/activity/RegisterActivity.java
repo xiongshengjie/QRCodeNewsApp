@@ -161,6 +161,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 intent.putExtra("userMobile", mobile);
                                 startActivity(intent);
                             } else {
+
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {

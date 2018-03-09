@@ -25,183 +25,196 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        
+
         <LinearLayout
             android:id="@+id/ll_username"
             android:layout_width="@dimen/register_width"
-            android:layout_height="@dimen/login_height"
-            android:layout_centerHorizontal="true"
+            android:layout_height="@dimen/register_height"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="@dimen/login_button_blank">
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/register_blank">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/black"
                 android:gravity="center"
-                android:textSize="@dimen/login_text_size"
-                android:text="@string/username" />
+                android:text="@string/username"
+                android:textColor="@color/black"
+                android:textSize="@dimen/login_text_size" />
 
             <EditText
                 android:id="@+id/et_username"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_margin="3dp"
                 android:layout_weight="2"
-                android:layout_margin="5dp"
-                android:enabled="false"/>
+                android:maxLines="1"
+                android:singleLine="true"
+                android:enabled="false" />
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_nickname"
             android:layout_width="@dimen/register_width"
-            android:layout_height="@dimen/login_height"
-            android:layout_centerHorizontal="true"
+            android:layout_height="@dimen/register_height"
             android:layout_below="@+id/ll_username"
-            android:layout_marginTop="@dimen/login_button_blank">
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/register_blank">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/black"
                 android:gravity="center"
-                android:textSize="@dimen/login_text_size"
-                android:text="@string/nickname" />
+                android:text="@string/nickname"
+                android:textColor="@color/black"
+                android:textSize="@dimen/login_text_size" />
 
             <EditText
                 android:id="@+id/et_nickname"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:layout_margin="5dp" />
+                android:layout_margin="3dp"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:layout_weight="2" />
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_password"
             android:layout_width="@dimen/register_width"
-            android:layout_height="@dimen/login_height"
-            android:layout_centerHorizontal="true"
+            android:layout_height="@dimen/register_height"
             android:layout_below="@+id/ll_nickname"
-            android:layout_marginTop="@dimen/login_button_blank">
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/register_blank">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/black"
                 android:gravity="center"
-                android:textSize="@dimen/login_text_size"
-                android:text="@string/login_password_hint" />
+                android:text="@string/login_password_hint"
+                android:textColor="@color/black"
+                android:textSize="@dimen/login_text_size" />
 
             <EditText
                 android:id="@+id/et_password"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:inputType="textPassword"
+                android:layout_margin="3dp"
                 android:layout_weight="2"
-                android:layout_margin="5dp" />
+                android:maxLines="1"
+                android:singleLine="true"
+                android:inputType="textPassword" />
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll__re_input_password"
             android:layout_width="@dimen/register_width"
-            android:layout_height="@dimen/login_height"
-            android:layout_centerHorizontal="true"
+            android:layout_height="@dimen/register_height"
             android:layout_below="@+id/ll_password"
-            android:layout_marginTop="@dimen/login_button_blank">
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/register_blank">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/black"
                 android:gravity="center"
-                android:textSize="@dimen/login_text_size"
-                android:text="@string/login_re_input_password" />
+                android:text="@string/login_re_input_password"
+                android:textColor="@color/black"
+                android:textSize="@dimen/login_text_size" />
 
             <EditText
                 android:id="@+id/et_re_password"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:inputType="textPassword"
+                android:layout_margin="3dp"
                 android:layout_weight="2"
-                android:layout_margin="5dp" />
+                android:maxLines="1"
+                android:singleLine="true"
+                android:inputType="textPassword" />
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_mobile"
             android:layout_width="@dimen/register_width"
-            android:layout_height="@dimen/login_height"
-            android:layout_centerHorizontal="true"
+            android:layout_height="@dimen/register_height"
             android:layout_below="@+id/ll__re_input_password"
-            android:layout_marginTop="@dimen/login_button_blank">
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/register_blank">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/black"
                 android:gravity="center"
-                android:textSize="@dimen/login_text_size"
-                android:text="@string/user_mobile" />
+                android:text="@string/user_mobile"
+                android:textColor="@color/black"
+                android:textSize="@dimen/login_text_size" />
 
             <EditText
                 android:id="@+id/et_mobile"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:enabled="false"
+                android:layout_margin="3dp"
                 android:layout_weight="2"
-                android:layout_margin="5dp" />
+                android:maxLines="1"
+                android:singleLine="true"
+                android:enabled="false" />
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_sex"
             android:layout_width="@dimen/register_width"
-            android:layout_height="@dimen/login_height"
-            android:layout_centerHorizontal="true"
+            android:layout_height="@dimen/register_height"
             android:layout_below="@+id/ll_mobile"
-            android:layout_marginTop="@dimen/login_button_blank">
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/register_blank">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/black"
                 android:gravity="center"
-                android:textSize="@dimen/login_text_size"
-                android:text="@string/regester_sex" />
+                android:text="@string/regester_sex"
+                android:textColor="@color/black"
+                android:textSize="@dimen/login_text_size" />
 
             <RadioGroup
                 android:id="@+id/rg_sex"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
+                android:checkedButton="@id/not_tell_you"
                 android:orientation="horizontal">
 
                 <RadioButton
+                    android:id="@+id/not_tell_you"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="先生"/>
+                    android:text="保密" />
 
                 <RadioButton
+                    android:id="@+id/female"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="女士"/>
+                    android:text="先生" />
 
                 <RadioButton
+                    android:id="@+id/male"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:checked="true"
-                    android:text="保密"/>
+                    android:text="女士" />
 
             </RadioGroup>
 
@@ -210,45 +223,71 @@
         <LinearLayout
             android:id="@+id/ll_head"
             android:layout_width="@dimen/register_width"
-            android:layout_height="@dimen/login_height"
-            android:layout_centerHorizontal="true"
+            android:layout_height="@dimen/register_height"
             android:layout_below="@+id/ll_sex"
-            android:layout_marginTop="@dimen/login_button_blank">
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/register_blank">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/black"
                 android:gravity="center"
-                android:textSize="@dimen/login_text_size"
-                android:text="@string/user_head" />
+                android:text="@string/user_head"
+                android:textColor="@color/black"
+                android:textSize="@dimen/login_text_size" />
 
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:enabled="false"
-                android:layout_weight="2"
-                android:layout_margin="5dp" />
+                android:layout_margin="3dp"
+                android:layout_weight="2" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_description"
+            android:layout_width="@dimen/register_width"
+            android:layout_height="@dimen/register_height"
+            android:layout_below="@+id/ll_head"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/register_blank">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/user_description"
+                android:textColor="@color/black"
+                android:textSize="@dimen/login_text_size" />
+
+            <EditText
+                android:id="@+id/et_description"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="3dp"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:layout_weight="2" />
 
         </LinearLayout>
 
         <TextView
             android:id="@+id/tv_register"
             android:layout_width="@dimen/login_width"
-            android:layout_height="@dimen/login_height"
+            android:layout_height="@dimen/register_height"
+            android:layout_below="@+id/ll_description"
             android:layout_centerHorizontal="true"
-            android:layout_below="@+id/ll_head"
-            android:layout_marginTop="@dimen/login_button_blank"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:text="@string/register"
+            android:layout_marginTop="@dimen/register_blank"
             android:background="@drawable/shape_login"
-            android:textSize="@dimen/login_text_size"/>
+            android:gravity="center"
+            android:text="@string/register"
+            android:textColor="@color/white"
+            android:textSize="@dimen/login_text_size" />
 
-        
+
     </RelativeLayout>
-
 
 
 </android.support.design.widget.CoordinatorLayout>

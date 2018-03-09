@@ -111,21 +111,21 @@ public class LoginMainActivity extends AppCompatActivity {
                             int statu = serverResponse.getStatus();
                             final String message = serverResponse.getMessage();
                             if (statu == Constants.SUCCESS) {
+                                Intent intent = new Intent(LoginMainActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
                                 User user = serverResponse.getResult();
                                 SharedPreferences userShared = getSharedPreferences("User", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = userShared.edit();
                                 editor.putString("userId", user.getUserId());
                                 editor.putString("userName", user.getUserName());
                                 editor.putString("userPassWord", user.getUserPassword());
-                                editor.putString("userNickName", user.getUserNickname());
+                                editor.putString("userNickname", user.getUserNickname());
                                 editor.putString("userMobile", user.getUserMobile());
                                 editor.putInt("userSex", user.getUserSex());
                                 editor.putString("userDescription", user.getUserDescription());
                                 editor.putString("userHead", user.getUserHead());
                                 editor.commit();
-                                Intent intent = new Intent(LoginMainActivity.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
                             } else {
                                 runOnUiThread(new Runnable() {
                                     @Override

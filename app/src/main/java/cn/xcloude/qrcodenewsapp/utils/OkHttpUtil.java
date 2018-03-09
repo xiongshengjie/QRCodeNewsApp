@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import cn.xcloude.qrcodenewsapp.constant.Constants;
+import cn.xcloude.qrcodenewsapp.entity.User;
 import cn.xcloude.qrcodenewsapp.interfaces.ProgressListener;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -81,8 +82,16 @@ public class OkHttpUtil {
 
     //验证验证码
     public static void checkSmsCode(String mobile, String smsCode, Callback callback) {
-        RequestBody requestBody = new FormBody.Builder().add("userMobile",mobile).add("smsCode",smsCode).build();
+        RequestBody requestBody = new FormBody.Builder().add("userMobile", mobile).add("smsCode", smsCode).build();
         Request request = new Request.Builder().url(Constants.checkSmsCode).post(requestBody).build();
+        okHttpClient.build().newCall(request).enqueue(callback);
+    }
+
+    //注册
+    public static void register(User user, Callback callback) {
+        RequestBody requestBody = new FormBody.Builder().add("userNickname", user.getUserNickname()).add("userName", user.getUserName()).add("userMobile", user.getUserMobile()).add("userPassword", user
+                .getUserPassword()).add("userSex", user.getUserSex().toString()).add("userDescription", user.getUserDescription()).add("userHead", user.getUserHead()).build();
+        Request request = new Request.Builder().url(Constants.userRegister).post(requestBody).build();
         okHttpClient.build().newCall(request).enqueue(callback);
     }
 }

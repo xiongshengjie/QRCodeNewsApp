@@ -29,6 +29,7 @@
     <string name="regester_sex">性别</string>
     <string name="login_re_input_password">验证密码</string>
     <string name="user_head">头像</string>
+    <string name="user_description">简介</string>
     <string name="publish_message">确认发布？</string>
     <string name="publish">发布</string>
     <string name="cancle">取消</string>
@@ -50,4 +51,5 @@
     <string name="sms_code">验证码</string>
     <string name="get_sms_code">获取验证码</string>
     <string name="improve_information">完善个人信息</string>
+    <string name="password_not_same">两次密码输入不同</string>
 </resources>

@@ -24,4 +24,5 @@ public final class Constants {
     public static final String login = baseUrl + "/user/login";
     public static final String getSmsCode = baseUrl + "/user/getSmsCode";
     public static final String checkSmsCode = baseUrl + "/user/checkSmsCode";
+    public static final String userRegister = baseUrl + "/user/register";
 }

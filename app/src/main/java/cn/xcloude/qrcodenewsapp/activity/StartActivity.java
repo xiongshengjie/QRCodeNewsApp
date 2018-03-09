@@ -38,7 +38,7 @@ public class StartActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (!TextUtils.isEmpty(getSharedPreferences("User", Context.MODE_PRIVATE).getString("UserId", null))) {
+                if (!TextUtils.isEmpty(getSharedPreferences("User", Context.MODE_PRIVATE).getString("userId", null))) {
                     gotoMain(true);
                 }else {
                     gotoMain(false);

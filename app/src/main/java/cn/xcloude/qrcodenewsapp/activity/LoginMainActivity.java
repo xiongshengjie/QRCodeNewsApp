@@ -208,19 +208,12 @@ public class LoginMainActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * 重写返回键
-     */
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            //实现只在冷启动时显示启动页，即点击返回键与点击HOME键退出效果一致
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.addCategory(Intent.CATEGORY_HOME);
-            startActivity(intent);
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
+    public void onBackPressed() {
+        //实现只在冷启动时显示启动页，即点击返回键与点击HOME键退出效果一致
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
     }
 }

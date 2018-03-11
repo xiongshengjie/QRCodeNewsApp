@@ -2,67 +2,144 @@ package cn.xcloude.qrcodenewsapp.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.KeyEvent;
-import android.widget.Button;
-import android.widget.Toast;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import org.litepal.crud.DataSupport;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import android.view.Display;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.xcloude.qrcodenewsapp.R;
-import cn.xcloude.qrcodenewsapp.constant.Constants;
-import cn.xcloude.qrcodenewsapp.entity.NewsCategory;
-import cn.xcloude.qrcodenewsapp.utils.LogUtil;
-import cn.xcloude.qrcodenewsapp.utils.OkHttpUtil;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
     private static String TAG = "MainActivity";
 
-    @BindView(R.id.btn_publish)
-    Button publishButton;
+    @BindView(R.id.main_toolbar)
+    Toolbar mainToolbar;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
+    @BindView(R.id.nav_view)
+    NavigationView navView;
+    @BindView(R.id.main_coordinatorLayout)
+    CoordinatorLayout mainCoordinatorLayout;
+
+    private SharedPreferences sharedPreferences;
+    private boolean isLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        init();
+        initView();
     }
 
-    @OnClick(R.id.btn_publish)
-    public void OnClickPublish() {
-        Intent intent = new Intent(MainActivity.this, PublishNewsActivity.class);
-        startActivity(intent);
+    private void init() {
+        sharedPreferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+    }
+
+    private void initView() {
+        setSupportActionBar(mainToolbar);
+        mainToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (TextUtils.isEmpty(sharedPreferences.getString("userId", null))) {
+            actionBar.setHomeAsUpIndicator(R.drawable.sonic);
+            isLogin = false;
+        } else {
+            //登录过，设置为头像
+            isLogin = true;
+        }
+
+        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                WindowManager manager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+                Display display = manager.getDefaultDisplay();
+                mainCoordinatorLayout.layout(navView.getRight(), 0,
+                        navView.getRight() + display.getWidth(), display.getHeight());
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_news:
+                Intent intent;
+                if (isLogin) {
+                    intent = new Intent(MainActivity.this, PublishNewsActivity.class);
+                } else {
+                    //未登录，提示或跳转登录界面
+                    intent = new Intent(MainActivity.this, LoginMainActivity.class);
+                }
+                startActivity(intent);
+                break;
+            case R.id.qr_scanner:
+                //扫码
+                break;
+            default:
+        }
+        return true;
     }
 
     /**
      * 重写返回键
      */
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && (!TextUtils.isEmpty(getSharedPreferences("User", Context.MODE_PRIVATE).getString("userId", null)))) {
-            //实现只在冷启动时显示启动页，即点击返回键与点击HOME键退出效果一致
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.addCategory(Intent.CATEGORY_HOME);
-            startActivity(intent);
-            return true;
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(navView)) {
+            drawerLayout.closeDrawers();
+        } else {
+            if (!TextUtils.isEmpty(sharedPreferences.getString("userId", null))) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                startActivity(intent);
+            } else {
+                super.onBackPressed();
+            }
         }
-        return super.onKeyDown(keyCode, event);
     }
 }

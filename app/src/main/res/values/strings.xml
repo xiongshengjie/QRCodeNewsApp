@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QRCodeNews</string>
+    <string name="app_name">码上新闻</string>
     <string name="font_size">字体大小</string>
     <string name="font_color">文字颜色</string>
     <string name="font_spacing">行间距</string>
@@ -32,6 +32,7 @@
     <string name="user_description">简介</string>
     <string name="publish_message">确认发布？</string>
     <string name="publish">发布</string>
+    <string name="scan">扫码</string>
     <string name="cancle">取消</string>
     <string name="confirm">确定</string>
     <string name="update">更新</string>

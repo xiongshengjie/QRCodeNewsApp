@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         if (TextUtils.isEmpty(sharedPreferences.getString("userId", null))) {
-            actionBar.setHomeAsUpIndicator(R.drawable.sonic);
+            actionBar.setHomeAsUpIndicator(R.drawable.person_center);
             isLogin = false;
         } else {
             //登录过，设置为头像

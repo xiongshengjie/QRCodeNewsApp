@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -75,9 +76,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 WindowManager manager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-                Display display = manager.getDefaultDisplay();
+                DisplayMetrics dm = new DisplayMetrics();
+                manager.getDefaultDisplay().getMetrics(dm);
                 mainCoordinatorLayout.layout(navView.getRight(), 0,
-                        navView.getRight() + display.getWidth(), display.getHeight());
+                        navView.getRight() + dm.widthPixels, dm.heightPixels);
             }
 
             @Override

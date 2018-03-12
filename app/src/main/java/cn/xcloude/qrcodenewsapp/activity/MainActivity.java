@@ -40,12 +40,8 @@ public class MainActivity extends AppCompatActivity {
     CoordinatorLayout mainCoordinatorLayout;
     @BindView(R.id.head_image)
     CircleImageView headImage;
-    @BindView(R.id.tv_person_description)
-    TextView tvPersonDes;
-    @BindView(R.id.tv_person_name)
-    TextView tvPersonName;
-    @BindView(R.id.nav_head_image)
-    CircleImageView navHeadImage;
+    private TextView tvPersonDes,tvPersonName;
+    private CircleImageView navHeadImage;
 
     private SharedPreferences sharedPreferences;
     private boolean isLogin;
@@ -70,14 +66,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (isLogin) {
+                    tvPersonName.setText(sharedPreferences.getString("userName",null));
+                    tvPersonDes.setText(sharedPreferences.getString("userDescription",null));
                     drawerLayout.openDrawer(GravityCompat.START);
                 } else {
                     //未登录，提示或跳转登录界面
                     Intent intent = new Intent(MainActivity.this, LoginMainActivity.class);
-                    StartActivity(intent);
+                    startActivity(intent);
                 }
             }
         });
+
+        View headVIew = navView.getHeaderView(0);
+
+        tvPersonDes = navView.findViewById(R.id.tv_person_description);
+        tvPersonName = navView.findViewById(R.id.tv_person_name);
+        navHeadImage = navView.findViewById(R.id.nav_head_image);
+
 
         if (TextUtils.isEmpty(sharedPreferences.getString("userId", null))) {
             Glide.with(MainActivity.this)

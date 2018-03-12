@@ -13,20 +13,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.design.widget.AppBarLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:orientation="horizontal">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/main_toolbar"
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/head_image"
+                android:layout_width="@dimen/head_size"
+                android:layout_height="@dimen/head_size"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/person_center"/>
+
+            <android.support.design.widget.AppBarLayout
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:layout_scrollFlags="scroll|enterAlways|snap"
-                app:popupTheme="@style/Theme.AppCompat.Light" />
+                android:layout_height="wrap_content"
+                app:elevation="0dp">
 
-        </android.support.design.widget.AppBarLayout>
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/main_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:layout_scrollFlags="scroll|enterAlways|snap"
+                    app:popupTheme="@style/Theme.AppCompat.Light" />
+
+            </android.support.design.widget.AppBarLayout>
+
+        </LinearLayout>
 
     </android.support.design.widget.CoordinatorLayout>
 
@@ -34,6 +50,9 @@
         android:id="@+id/nav_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="start" />
+        android:layout_gravity="start"
+        android:background="@color/white"
+        app:headerLayout="@layout/nav_head_layout"
+        app:menu="@menu/nav_menu"/>
 
 </android.support.v4.widget.DrawerLayout>

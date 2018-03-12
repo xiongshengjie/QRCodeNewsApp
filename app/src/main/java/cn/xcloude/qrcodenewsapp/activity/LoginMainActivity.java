@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -52,6 +53,8 @@ public class LoginMainActivity extends AppCompatActivity {
     @BindView(R.id.et_login_password)
     EditText loginPassword;
 
+    private ProgressDialog dialog = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +92,13 @@ public class LoginMainActivity extends AppCompatActivity {
                     return;
                 }
 
+                if(dialog == null){
+                    dialog = new ProgressDialog(LoginMainActivity.this,ProgressDialog.STYLE_SPINNER);
+                }
+
+                dialog.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.show();
 
 
                 OkHttpUtil.login(username, password, new Callback() {
@@ -100,10 +110,12 @@ public class LoginMainActivity extends AppCompatActivity {
                                 Toast.makeText(LoginMainActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
                             }
                         });
+                        dialog.dismiss();
                     }
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
+                        dialog.dismiss();
                         if(response.code() == 200) {
                             Gson gson = new Gson();
                             ResponseResult<User> serverResponse = gson.fromJson(response.body().string(), new TypeToken<ResponseResult<User>>() {

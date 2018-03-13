@@ -237,11 +237,20 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/login_text_size" />
 
-            <EditText
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:layout_weight="2" />
+                android:layout_weight="2"
+                android:layout_margin="3dp">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/pick_head"
+                    android:layout_width="@dimen/pick_head_size"
+                    android:layout_height="@dimen/pick_head_size"
+                    android:src="@drawable/person_center"
+                    android:layout_gravity="left|center_vertical"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 

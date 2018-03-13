@@ -54,4 +54,6 @@
     <string name="improve_information">完善个人信息</string>
     <string name="password_not_same">两次密码输入不同</string>
     <string name="person_publish">我发布的</string>
+    <string name="person_logout">退出登录</string>
+    <string name="person_information">个人信息</string>
 </resources>

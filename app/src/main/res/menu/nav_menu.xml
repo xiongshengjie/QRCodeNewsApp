@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/person_publish"
-        android:title="@string/person_publish"
-        android:icon="@drawable/ic_action"/>
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/person_publish"
+            android:icon="@drawable/ic_action"
+            android:title="@string/person_publish" />
+
+        <item
+            android:id="@+id/person_information"
+            android:icon="@drawable/person_center"
+            android:title="@string/person_information" />
+
+        <item
+            android:id="@+id/person_logout"
+            android:icon="@drawable/ic_back"
+            android:title="@string/person_logout" />
+
+    </group>
 
 </menu>

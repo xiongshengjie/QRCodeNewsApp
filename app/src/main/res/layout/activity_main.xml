@@ -51,6 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:fitsSystemWindows="true"
         android:background="@color/white"
         app:headerLayout="@layout/nav_head_layout"
         app:menu="@menu/nav_menu"/>

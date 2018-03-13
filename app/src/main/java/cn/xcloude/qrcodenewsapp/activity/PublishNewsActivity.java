@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -34,10 +35,11 @@ import com.even.mricheditor.RichEditorCallback;
 import com.even.mricheditor.ui.ActionImageView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.lzy.imagepicker.ImagePicker;
-import com.lzy.imagepicker.bean.ImageItem;
-import com.lzy.imagepicker.ui.ImageGridActivity;
-import com.lzy.imagepicker.view.CropImageView;
+import com.luck.picture.lib.PictureSelector;
+import com.luck.picture.lib.config.PictureConfig;
+import com.luck.picture.lib.config.PictureMimeType;
+import com.luck.picture.lib.entity.LocalMedia;
+import com.luck.picture.lib.tools.PictureFileUtils;
 
 import org.litepal.crud.DataSupport;
 
@@ -60,11 +62,10 @@ import cn.xcloude.qrcodenewsapp.entity.ResponseResult;
 import cn.xcloude.qrcodenewsapp.fragment.EditHyperlinkPopWindow;
 import cn.xcloude.qrcodenewsapp.fragment.EditTablePopWindow;
 import cn.xcloude.qrcodenewsapp.fragment.EditorMenuFragment;
+import cn.xcloude.qrcodenewsapp.interfaces.KeyboardHeightObserver;
 import cn.xcloude.qrcodenewsapp.interfaces.OnActionPerformListener;
 import cn.xcloude.qrcodenewsapp.interfaces.ProgressListener;
 import cn.xcloude.qrcodenewsapp.utils.FileIOUtil;
-import cn.xcloude.qrcodenewsapp.utils.GlideImageLoader;
-import cn.xcloude.qrcodenewsapp.interfaces.KeyboardHeightObserver;
 import cn.xcloude.qrcodenewsapp.utils.KeyboardHeightProvider;
 import cn.xcloude.qrcodenewsapp.utils.KeyboardUtils;
 import cn.xcloude.qrcodenewsapp.utils.LogUtil;
@@ -128,15 +129,12 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                     R.drawable.ic_format_list_bulleted, R.drawable.ic_line, R.drawable.ic_code_block,
                     R.drawable.ic_format_quote, R.drawable.ic_code_review);
 
-    private static final int REQUEST_CODE_CHOOSE = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_publish_news);
         ButterKnife.bind(this);
 
-        initImageLoader();
         initView();
 
         int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40,
@@ -169,23 +167,6 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
         fm.beginTransaction()
                 .add(R.id.fl_action, mEditorMenuFragment, EditorMenuFragment.class.getName())
                 .commit();
-    }
-
-    /**
-     * ImageLoader for insert Image
-     */
-    private void initImageLoader() {
-        ImagePicker imagePicker = ImagePicker.getInstance();
-        imagePicker.setImageLoader(new GlideImageLoader());
-        imagePicker.setShowCamera(true);
-        imagePicker.setCrop(false);
-        imagePicker.setMultiMode(false);
-        imagePicker.setSaveRectangle(true);
-        imagePicker.setStyle(CropImageView.Style.RECTANGLE);
-        imagePicker.setFocusWidth(800);
-        imagePicker.setFocusHeight(800);
-        imagePicker.setOutPutX(256);
-        imagePicker.setOutPutY(256);
     }
 
     private void initView() {
@@ -279,7 +260,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                         public void onClick(DialogInterface dialogInterface, int i) {
                             final Map<String, String> params = new HashMap<>();
                             params.put("title", title);
-                            params.put("author", getSharedPreferences("User", Context.MODE_PRIVATE).getString("userId",null));
+                            params.put("author", getSharedPreferences("User", Context.MODE_PRIVATE).getString("userId", null));
                             params.put("category", category.toString());
                             params.put("html", html);
 
@@ -344,7 +325,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if(response.code() == 200) {
+                if (response.code() == 200) {
                     ResponseResult<News> result = new Gson().fromJson(response.body().string(), new TypeToken<ResponseResult<News>>() {
                     }.getType());
                     int status = result.getStatus();
@@ -372,7 +353,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                         });
                         dialog.setCancelable(true);
                     }
-                }else {
+                } else {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -417,22 +398,34 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
 
     @OnClick(R.id.iv_action_insert_image)
     void onClickInsertImage() {
-        Intent intent = new Intent(this, ImageGridActivity.class);
-        startActivityForResult(intent, REQUEST_CODE_CHOOSE);
+        PictureSelector.create(PublishNewsActivity.this)
+                .openGallery(PictureMimeType.ofImage())
+                .imageSpanCount(4)
+                .selectionMode(PictureConfig.SINGLE)
+                .isCamera(true)
+                .setOutputCameraPath(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath())
+                .enableCrop(true)// 是否裁剪 true or false
+                .compress(true)// 是否压缩 true or false
+                .freeStyleCropEnabled(true)
+                .circleDimmedLayer(false)
+                .scaleEnabled(true)
+                .rotateEnabled(true)
+                .showCropFrame(true)
+                .showCropGrid(true)
+                .forResult(PictureConfig.CHOOSE_REQUEST);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == ImagePicker.RESULT_CODE_ITEMS
+        if (resultCode == RESULT_OK
                 && data != null
-                && requestCode == REQUEST_CODE_CHOOSE) {
-            ArrayList<ImageItem> images =
-                    (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
+                && requestCode == PictureConfig.CHOOSE_REQUEST) {
+            List<LocalMedia> images = PictureSelector.obtainMultipleResult(data);
             if (images != null && !images.isEmpty()) {
 
                 //1.Insert the Base64 String (Base64.NO_WRAP)
-                ImageItem imageItem = images.get(0);
+                LocalMedia imageItem = images.get(0);
 //                mRichEditorAction.insertImageData(imageItem.name,
 //                        encodeFileToBase64Binary(imageItem.path));
 
@@ -440,11 +433,11 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                 if (files == null) {
                     files = new ArrayList<>();
                 }
-                File file = new File(imageItem.path);
+                File file = new File(imageItem.getCompressPath());
                 if (!files.contains(file)) {
                     files.add(file);
                 }
-                mRichEditorAction.insertImageUrl(imageItem.path);
+                mRichEditorAction.insertImageUrl(imageItem.getCompressPath());
             }
         }
     }
@@ -513,6 +506,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
         super.onDestroy();
         keyboardHeightProvider.close();
         dialog = null;
+        PictureFileUtils.deleteCacheDirFile(PublishNewsActivity.this);
         files.clear();
     }
 

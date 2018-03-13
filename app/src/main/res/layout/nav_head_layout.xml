@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="240dp"
+    android:layout_height="180dp"
     android:background="@drawable/default_background"
     android:orientation="horizontal"
     android:paddingBottom="50dp"
@@ -28,14 +28,16 @@
             android:layout_weight="1"
             android:gravity="left|bottom"
             android:textColor="@color/white"
-            android:textSize="@dimen/text_super"/>
+            android:textSize="@dimen/text_super" />
 
         <TextView
             android:id="@+id/tv_person_description"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:gravity="left|top"/>
+            android:gravity="left|top"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_large" />
 
     </LinearLayout>
 

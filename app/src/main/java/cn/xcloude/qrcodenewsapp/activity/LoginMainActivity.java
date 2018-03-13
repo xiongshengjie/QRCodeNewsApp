@@ -98,6 +98,7 @@ public class LoginMainActivity extends AppCompatActivity {
 
                 dialog.setCancelable(false);
                 dialog.setCanceledOnTouchOutside(false);
+                dialog.setMessage("登录中");
                 dialog.show();
 
 

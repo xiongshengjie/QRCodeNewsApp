@@ -15,10 +15,11 @@
   <dimen name="login_bottom_blank">40dp</dimen>
   <dimen name="login_edit_blank">40dp</dimen>
   <dimen name="login_text_size">15sp</dimen>
-  <dimen name="register_blank">23dp</dimen>
+  <dimen name="register_blank">10dp</dimen>
   <dimen name="get_sms_size">12sp</dimen>
   <dimen name="head_size">30dp</dimen>
+  <dimen name="pick_head_size">42dp</dimen>
   <dimen name="person_center_head_size">70dp</dimen>
   <dimen name="person_center_head_padding_left">30dp</dimen>
-  <dimen name="person_center_head_padding_right">5dp</dimen>
+  <dimen name="person_center_head_padding_right">15dp</dimen>
 </resources>

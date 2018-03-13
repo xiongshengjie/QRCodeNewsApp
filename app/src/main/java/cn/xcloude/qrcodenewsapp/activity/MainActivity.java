@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
     private boolean isLogin;
+    private RequestOptions options = new RequestOptions();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         sharedPreferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+        options.centerCrop();
     }
 
     private void initView() {
@@ -66,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (isLogin) {
-                    tvPersonName.setText(sharedPreferences.getString("userName",null));
+                    tvPersonName.setText(sharedPreferences.getString("userNickname",null));
                     tvPersonDes.setText(sharedPreferences.getString("userDescription",null));
                     drawerLayout.openDrawer(GravityCompat.START);
                 } else {
@@ -77,17 +81,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        View headVIew = navView.getHeaderView(0);
+        View headView = navView.getHeaderView(0);
 
-        tvPersonDes = navView.findViewById(R.id.tv_person_description);
-        tvPersonName = navView.findViewById(R.id.tv_person_name);
-        navHeadImage = navView.findViewById(R.id.nav_head_image);
+        tvPersonDes = headView.findViewById(R.id.tv_person_description);
+        tvPersonName = headView.findViewById(R.id.tv_person_name);
+        navHeadImage = headView.findViewById(R.id.nav_head_image);
 
 
         if (TextUtils.isEmpty(sharedPreferences.getString("userId", null))) {
             Glide.with(MainActivity.this)
                     .load(R.drawable.person_center)
-                    .centerCrop()
+                    .apply(options)
                     .into(headImage);
             isLogin = false;
         } else {
@@ -96,48 +100,73 @@ public class MainActivity extends AppCompatActivity {
             if (TextUtils.isEmpty(head)) {
                 Glide.with(MainActivity.this)
                         .load(R.drawable.person_center)
-                        .centerCrop()
+                        .apply(options)
                         .into(headImage);
                 Glide.with(MainActivity.this)
                         .load(R.drawable.person_center)
-                        .centerCrop()
+                        .apply(options)
                         .into(navHeadImage);
             } else {
                 Glide.with(MainActivity.this)
                         .load(Constants.baseUrl + "/" + head)
-                        .centerCrop()
+                        .apply(options)
                         .into(headImage);
                 Glide.with(MainActivity.this)
                         .load(Constants.baseUrl + "/" + head)
-                        .centerCrop()
+                        .apply(options)
                         .into(navHeadImage);
             }
             isLogin = true;
         }
 
-        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+        if(isLogin){
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+                @Override
+                public void onDrawerSlide(View drawerView, float slideOffset) {
+                    WindowManager manager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+                    DisplayMetrics dm = new DisplayMetrics();
+                    manager.getDefaultDisplay().getMetrics(dm);
+                    mainCoordinatorLayout.layout(navView.getRight(), 0,
+                            navView.getRight() + dm.widthPixels, dm.heightPixels);
+                }
+
+                @Override
+                public void onDrawerOpened(View drawerView) {
+
+                }
+
+                @Override
+                public void onDrawerClosed(View drawerView) {
+
+                }
+
+                @Override
+                public void onDrawerStateChanged(int newState) {
+
+                }
+            });
+        }else {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                WindowManager manager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-                DisplayMetrics dm = new DisplayMetrics();
-                manager.getDefaultDisplay().getMetrics(dm);
-                mainCoordinatorLayout.layout(navView.getRight(), 0,
-                        navView.getRight() + dm.widthPixels, dm.heightPixels);
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.person_publish:
+                        //我的发布界面
+                        break;
+                    case R.id.person_information:
+                        //修改个人信息
+                        break;
+                    case R.id.person_logout:
+                        Intent intent = new Intent(MainActivity.this,LoginMainActivity.class);
+                        startActivity(intent);
+                        sharedPreferences.edit().clear().commit();
+                        finish();
+                }
+                return false;
             }
         });
     }

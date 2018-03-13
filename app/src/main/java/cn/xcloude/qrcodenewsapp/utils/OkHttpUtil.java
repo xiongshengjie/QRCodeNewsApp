@@ -1,5 +1,7 @@
 package cn.xcloude.qrcodenewsapp.utils;
 
+import android.text.TextUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -89,8 +91,20 @@ public class OkHttpUtil {
 
     //注册
     public static void register(User user, Callback callback) {
-        RequestBody requestBody = new FormBody.Builder().add("userNickname", user.getUserNickname()).add("userName", user.getUserName()).add("userMobile", user.getUserMobile()).add("userPassword", user
-                .getUserPassword()).add("userSex", user.getUserSex().toString()).add("userDescription", user.getUserDescription()).add("userHead", user.getUserHead()).build();
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        builder.setType(MultipartBody.FORM);
+        builder.addFormDataPart("userNickname", user.getUserNickname())
+                .addFormDataPart("userName", user.getUserName())
+                .addFormDataPart("userMobile", user.getUserMobile())
+                .addFormDataPart("userPassword", user.getUserPassword())
+                .addFormDataPart("userSex", user.getUserSex().toString())
+                .addFormDataPart("userDescription", user.getUserDescription());
+        String path = user.getUserHead();
+        if(!TextUtils.isEmpty(path)){
+            File file = new File(path);
+            builder.addFormDataPart("headFile",file.getName(),RequestBody.create(MediaType.parse("application/octet-stream"), file));
+        }
+        RequestBody requestBody = builder.build();
         Request request = new Request.Builder().url(Constants.userRegister).post(requestBody).build();
         okHttpClient.build().newCall(request).enqueue(callback);
     }

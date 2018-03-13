@@ -109,12 +109,13 @@ public class ImproveInformationActivity extends AppCompatActivity {
                         .setOutputCameraPath(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath())
                         .enableCrop(true)// 是否裁剪 true or false
                         .compress(true)// 是否压缩 true or false
-                        .freeStyleCropEnabled(true)
+                        .freeStyleCropEnabled(false)
                         .circleDimmedLayer(true)
                         .scaleEnabled(true)
                         .rotateEnabled(true)
                         .showCropFrame(false)
                         .showCropGrid(false)
+                        .cropWH(256,256)
                         .forResult(PictureConfig.CHOOSE_REQUEST);
             }
         });

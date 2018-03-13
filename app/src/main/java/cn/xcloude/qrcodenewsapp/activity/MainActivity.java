@@ -70,8 +70,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (isLogin) {
-                    tvPersonName.setText(sharedPreferences.getString("userNickname",null));
-                    tvPersonDes.setText(sharedPreferences.getString("userDescription",null));
                     drawerLayout.openDrawer(GravityCompat.START);
                 } else {
                     //未登录，提示或跳转登录界面
@@ -121,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
 
         if(isLogin){
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            tvPersonName.setText(sharedPreferences.getString("userNickname",null));
+            tvPersonDes.setText(sharedPreferences.getString("userDescription",null));
             drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
                 @Override
                 public void onDrawerSlide(View drawerView, float slideOffset) {

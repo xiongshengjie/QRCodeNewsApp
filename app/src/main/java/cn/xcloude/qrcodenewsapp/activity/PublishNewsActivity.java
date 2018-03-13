@@ -412,6 +412,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                 .rotateEnabled(true)
                 .showCropFrame(true)
                 .showCropGrid(true)
+                .cropWH(640,512)
                 .forResult(PictureConfig.CHOOSE_REQUEST);
     }
 

@@ -39,7 +39,6 @@ import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
-import com.luck.picture.lib.tools.PictureFileUtils;
 
 import org.litepal.crud.DataSupport;
 
@@ -412,7 +411,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                 .rotateEnabled(true)
                 .showCropFrame(true)
                 .showCropGrid(true)
-                .cropWH(640,512)
+                .cropWH(640, 512)
                 .forResult(PictureConfig.CHOOSE_REQUEST);
     }
 
@@ -434,11 +433,19 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                 if (files == null) {
                     files = new ArrayList<>();
                 }
-                File file = new File(imageItem.getCompressPath());
+
+                String path;
+                if (imageItem.isCompressed()) {
+                    path = imageItem.getCompressPath();
+                } else {
+                    path = imageItem.getCutPath();
+                }
+
+                File file = new File(path);
                 if (!files.contains(file)) {
                     files.add(file);
                 }
-                mRichEditorAction.insertImageUrl(imageItem.getCompressPath());
+                mRichEditorAction.insertImageUrl(path);
             }
         }
     }
@@ -507,7 +514,6 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
         super.onDestroy();
         keyboardHeightProvider.close();
         dialog = null;
-        PictureFileUtils.deleteCacheDirFile(PublishNewsActivity.this);
         files.clear();
     }
 

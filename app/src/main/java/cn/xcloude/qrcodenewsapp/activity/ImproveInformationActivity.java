@@ -116,6 +116,7 @@ public class ImproveInformationActivity extends AppCompatActivity {
                         .showCropFrame(false)
                         .showCropGrid(false)
                         .cropWH(256,256)
+                        .minimumCompressSize(20)
                         .forResult(PictureConfig.CHOOSE_REQUEST);
             }
         });
@@ -130,7 +131,11 @@ public class ImproveInformationActivity extends AppCompatActivity {
             List<LocalMedia> images = PictureSelector.obtainMultipleResult(data);
             if (images != null && !images.isEmpty()) {
                 LocalMedia imageItem = images.get(0);
-                headPath = imageItem.getCompressPath();
+                if(imageItem.isCompressed()) {
+                    headPath = imageItem.getCompressPath();
+                }else{
+                    headPath = imageItem.getCutPath();
+                }
 
                 //2.Insert the ImageUrl
                 if (TextUtils.isEmpty(headPath)) {
@@ -223,6 +228,5 @@ public class ImproveInformationActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        PictureFileUtils.deleteCacheDirFile(ImproveInformationActivity.this);
     }
 }

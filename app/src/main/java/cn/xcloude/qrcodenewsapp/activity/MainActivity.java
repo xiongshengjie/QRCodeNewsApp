@@ -7,7 +7,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,11 +25,19 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.zhengsr.viewpagerlib.indicator.TabIndicator;
+
+import org.litepal.crud.DataSupport;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.xcloude.qrcodenewsapp.R;
 import cn.xcloude.qrcodenewsapp.constant.Constants;
+import cn.xcloude.qrcodenewsapp.entity.NewsCategory;
+import cn.xcloude.qrcodenewsapp.fragment.ListNewsFragment;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,12 +54,21 @@ public class MainActivity extends AppCompatActivity {
     CoordinatorLayout mainCoordinatorLayout;
     @BindView(R.id.head_image)
     CircleImageView headImage;
-    private TextView tvPersonDes,tvPersonName;
+    @BindView(R.id.viewPager)
+    ViewPager viewPager;
+    @BindView(R.id.line_indicator)
+    TabIndicator lineIndicator;
+
+    private TextView tvPersonDes, tvPersonName;
     private CircleImageView navHeadImage;
 
     private SharedPreferences sharedPreferences;
     private boolean isLogin;
     private RequestOptions options = new RequestOptions();
+
+    private List<Fragment> fragmentList;
+    private List<NewsCategory> categoryList;
+    private List<String> titles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +83,9 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         sharedPreferences = getSharedPreferences("User", Context.MODE_PRIVATE);
         options.centerCrop();
+        fragmentList = new ArrayList<>();
+        categoryList = DataSupport.findAll(NewsCategory.class);
+        titles = new ArrayList<>();
     }
 
     private void initView() {
@@ -117,10 +141,10 @@ public class MainActivity extends AppCompatActivity {
             isLogin = true;
         }
 
-        if(isLogin){
+        if (isLogin) {
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            tvPersonName.setText(sharedPreferences.getString("userNickname",null));
-            tvPersonDes.setText(sharedPreferences.getString("userDescription",null));
+            tvPersonName.setText(sharedPreferences.getString("userNickname", null));
+            tvPersonDes.setText(sharedPreferences.getString("userDescription", null));
             drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
                 @Override
                 public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -146,14 +170,14 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             });
-        }else {
+        } else {
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
 
         navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.person_publish:
                         //我的发布界面
                         break;
@@ -161,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                         //修改个人信息
                         break;
                     case R.id.person_logout:
-                        Intent intent = new Intent(MainActivity.this,LoginMainActivity.class);
+                        Intent intent = new Intent(MainActivity.this, LoginMainActivity.class);
                         startActivity(intent);
                         sharedPreferences.edit().clear().commit();
                         finish();
@@ -169,6 +193,22 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        for (NewsCategory category : categoryList) {
+            ListNewsFragment fragment = ListNewsFragment.newInstance(category.getCategoryId(), category.getCategoryName());
+            titles.add(category.getCategoryName());
+            fragmentList.add(fragment);
+        }
+
+        viewPager.setAdapter(new ListNewsAdapter(getSupportFragmentManager()));
+        lineIndicator.setViewPagerSwitchSpeed(viewPager, 0);
+        lineIndicator.setTabData(viewPager, titles, new TabIndicator.TabClickListener() {
+            @Override
+            public void onClick(int position) {
+                viewPager.setCurrentItem(position);
+            }
+        });
+
     }
 
     @Override
@@ -214,6 +254,23 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 super.onBackPressed();
             }
+        }
+    }
+
+    class ListNewsAdapter extends FragmentStatePagerAdapter {
+
+        public ListNewsAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return fragmentList.size();
         }
     }
 }

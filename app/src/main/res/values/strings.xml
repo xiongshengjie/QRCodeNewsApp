@@ -56,4 +56,7 @@
     <string name="person_publish">我发布的</string>
     <string name="person_logout">退出登录</string>
     <string name="person_information">个人信息</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

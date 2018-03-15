@@ -1,5 +1,6 @@
 package cn.xcloude.qrcodenewsapp.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,7 +25,6 @@ import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
-import com.luck.picture.lib.tools.PictureFileUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -67,6 +67,7 @@ public class ImproveInformationActivity extends AppCompatActivity {
     CircleImageView pickHead;
 
     private String headPath;
+    private ProgressDialog dialog = null;
 
 
     @Override
@@ -115,7 +116,7 @@ public class ImproveInformationActivity extends AppCompatActivity {
                         .rotateEnabled(true)
                         .showCropFrame(false)
                         .showCropGrid(false)
-                        .cropWH(256,256)
+                        .cropWH(256, 256)
                         .minimumCompressSize(20)
                         .forResult(PictureConfig.CHOOSE_REQUEST);
             }
@@ -131,9 +132,9 @@ public class ImproveInformationActivity extends AppCompatActivity {
             List<LocalMedia> images = PictureSelector.obtainMultipleResult(data);
             if (images != null && !images.isEmpty()) {
                 LocalMedia imageItem = images.get(0);
-                if(imageItem.isCompressed()) {
+                if (imageItem.isCompressed()) {
                     headPath = imageItem.getCompressPath();
-                }else{
+                } else {
                     headPath = imageItem.getCutPath();
                 }
 
@@ -168,6 +169,15 @@ public class ImproveInformationActivity extends AppCompatActivity {
         int sex = rgSex.indexOfChild(radioButton);
         User user = new User(null, username, password, nickname, mobile, sex, description, headPath);
 
+        if (dialog == null) {
+            dialog = new ProgressDialog(ImproveInformationActivity.this, ProgressDialog.STYLE_SPINNER);
+        }
+
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("注册中");
+        dialog.show();
+
         OkHttpUtil.register(user, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -177,10 +187,12 @@ public class ImproveInformationActivity extends AppCompatActivity {
                         Toast.makeText(ImproveInformationActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
                     }
                 });
+                dialog.dismiss();
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                dialog.dismiss();
                 if (response.code() == 200) {
                     Gson gson = new Gson();
                     ResponseResult<User> serverResponse = gson.fromJson(response.body().string(), new TypeToken<ResponseResult<User>>() {
@@ -205,7 +217,6 @@ public class ImproveInformationActivity extends AppCompatActivity {
                         editor.putString("userHead", user.getUserHead());
                         editor.commit();
                     } else {
-
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

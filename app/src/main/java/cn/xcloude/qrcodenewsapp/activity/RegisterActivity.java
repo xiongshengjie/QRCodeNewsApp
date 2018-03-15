@@ -1,5 +1,6 @@
 package cn.xcloude.qrcodenewsapp.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -43,6 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private TimeCount timeCount;
     private long remainTime;
+    private ProgressDialog dialog = null;
 
 
     @Override
@@ -72,6 +74,14 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this, R.string.not_input_mobile, Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                if(dialog == null){
+                    dialog = new ProgressDialog(RegisterActivity.this,ProgressDialog.STYLE_SPINNER);
+                }
+                dialog.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setMessage("短信发送中");
+                dialog.show();
                 OkHttpUtil.getSmsCode(mobile, new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
@@ -81,10 +91,12 @@ public class RegisterActivity extends AppCompatActivity {
                                 Toast.makeText(RegisterActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
                             }
                         });
+                        dialog.dismiss();
                     }
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
+                        dialog.dismiss();
                         if (response.code() == 200) {
                             Gson gson = new Gson();
                             ResponseResult<Object> serverResponse = gson.fromJson(response.body().string(), new TypeToken<ResponseResult<Object>>() {
@@ -135,7 +147,14 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this, R.string.not_input_sms_code, Toast.LENGTH_SHORT).show();
                     return;
                 }
+                if(dialog == null){
+                    dialog = new ProgressDialog(RegisterActivity.this,ProgressDialog.STYLE_SPINNER);
+                }
 
+                dialog.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setMessage("验证中");
+                dialog.show();
                 OkHttpUtil.checkSmsCode(mobile, smsCode, new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
@@ -145,10 +164,12 @@ public class RegisterActivity extends AppCompatActivity {
                                 Toast.makeText(RegisterActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
                             }
                         });
+                        dialog.dismiss();
                     }
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
+                        dialog.dismiss();
                         if (response.code() == 200) {
                             Gson gson = new Gson();
                             ResponseResult<Object> serverResponse = gson.fromJson(response.body().string(), new TypeToken<ResponseResult<Object>>() {

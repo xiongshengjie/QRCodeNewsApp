@@ -48,23 +48,13 @@
                 </android.support.design.widget.AppBarLayout>
             </LinearLayout>
 
-            <com.zhengsr.viewpagerlib.indicator.TabIndicator
-                android:id="@+id/line_indicator"
-                android:layout_gravity="center_horizontal"
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tab_layout"
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
-                app:tab_color="@color/colorAccent"
-                app:tab_width="5dp"
-                app:tab_height="2dp"
-                app:tab_text_default_color="@color/black"
-                app:tab_text_change_color="@color/white"
-                app:tab_show="false"
-                app:tab_text_type="colortext"
-                app:tab_textsize="16sp"
-                app:visiabel_size="4"
-                app:tap_type="rect">
-
-            </com.zhengsr.viewpagerlib.indicator.TabIndicator>
+                android:layout_height="30dp"
+                app:tabIndicatorHeight="0dp"
+                app:tabSelectedTextColor="@color/light_blue_500"
+                app:tabMode="scrollable" />
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/viewPager"

@@ -3,10 +3,13 @@ package cn.xcloude.qrcodenewsapp.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -25,7 +28,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.zhengsr.viewpagerlib.indicator.TabIndicator;
 
 import org.litepal.crud.DataSupport;
 
@@ -56,8 +58,8 @@ public class MainActivity extends AppCompatActivity {
     CircleImageView headImage;
     @BindView(R.id.viewPager)
     ViewPager viewPager;
-    @BindView(R.id.line_indicator)
-    TabIndicator lineIndicator;
+    @BindView(R.id.tab_layout)
+    TabLayout tabLayout;
 
     private TextView tvPersonDes, tvPersonName;
     private CircleImageView navHeadImage;
@@ -187,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.person_logout:
                         Intent intent = new Intent(MainActivity.this, LoginMainActivity.class);
                         startActivity(intent);
-                        sharedPreferences.edit().clear().commit();
+                        sharedPreferences.edit().clear().apply();
                         finish();
                 }
                 return false;
@@ -201,13 +203,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         viewPager.setAdapter(new ListNewsAdapter(getSupportFragmentManager()));
-        lineIndicator.setViewPagerSwitchSpeed(viewPager, 0);
-        lineIndicator.setTabData(viewPager, titles, new TabIndicator.TabClickListener() {
-            @Override
-            public void onClick(int position) {
-                viewPager.setCurrentItem(position);
-            }
-        });
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setTabTextColors(Color.BLACK, Color.BLUE);
 
     }
 
@@ -259,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
 
     class ListNewsAdapter extends FragmentStatePagerAdapter {
 
-        public ListNewsAdapter(FragmentManager fm) {
+        private ListNewsAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -271,6 +268,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             return fragmentList.size();
+        }
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return categoryList.get(position).getCategoryName();
         }
     }
 }

@@ -100,12 +100,18 @@ public class OkHttpUtil {
                 .addFormDataPart("userSex", user.getUserSex().toString())
                 .addFormDataPart("userDescription", user.getUserDescription());
         String path = user.getUserHead();
-        if(!TextUtils.isEmpty(path)){
+        if (!TextUtils.isEmpty(path)) {
             File file = new File(path);
-            builder.addFormDataPart("headFile",file.getName(),RequestBody.create(MediaType.parse("application/octet-stream"), file));
+            builder.addFormDataPart("headFile", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file));
         }
         RequestBody requestBody = builder.build();
         Request request = new Request.Builder().url(Constants.userRegister).post(requestBody).build();
+        okHttpClient.build().newCall(request).enqueue(callback);
+    }
+
+    public static void listNews(int category, int pageNum, int pageCount, Callback callback) {
+        RequestBody requestBody = new FormBody.Builder().add("category", category + "").add("pageNum", pageNum + "").add("pageCount", pageCount + "").build();
+        Request request = new Request.Builder().url(Constants.listNews).post(requestBody).build();
         okHttpClient.build().newCall(request).enqueue(callback);
     }
 }

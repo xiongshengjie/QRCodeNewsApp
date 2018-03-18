@@ -5,6 +5,7 @@
   <dimen name="text_medium">14sp</dimen>
   <dimen name="text_large">18sp</dimen>
   <dimen name="text_super">32sp</dimen>
+  <dimen name="text_news_title">25sp</dimen>
   <dimen name="corner_radius">12dp</dimen>
   <dimen name="corner_padding">12dp</dimen>
   <dimen name="login_width">250dp</dimen>
@@ -22,4 +23,6 @@
   <dimen name="person_center_head_size">70dp</dimen>
   <dimen name="person_center_head_padding_left">30dp</dimen>
   <dimen name="person_center_head_padding_right">15dp</dimen>
+  <dimen name="news_list_padding">5dp</dimen>
+  <dimen name="news_list_inner_padding">2dp</dimen>
 </resources>

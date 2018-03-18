@@ -204,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager.setAdapter(new ListNewsAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
-        tabLayout.setTabTextColors(Color.BLACK, Color.BLUE);
 
     }
 

@@ -198,7 +198,7 @@ public class ListNewsFragment extends Fragment {
                 ((OnePictureViewHolder) holder).newsTitle.setText(news.getNewsTitle());
                 ((OnePictureViewHolder) holder).newsAnother.setText(news.getNewsAuthor());
                 if (!TextUtils.isEmpty(imagePath)) {
-                    imagePath = imagePath.split("|")[0];
+                    imagePath = imagePath.split("\\|")[0];
                     RequestOptions options = new RequestOptions();
                     options.centerCrop();
                     Glide.with(getActivity())
@@ -212,7 +212,7 @@ public class ListNewsFragment extends Fragment {
                 String imagePath = news.getNewsImg();
                 ((ThreePictureViewHolder) holder).newsTitle.setText(news.getNewsTitle());
                 ((ThreePictureViewHolder) holder).newsAnother.setText(news.getNewsAuthor());
-                String path[] = imagePath.split("|");
+                String path[] = imagePath.split("\\|");
                 RequestOptions options = new RequestOptions();
                 options.centerCrop();
                 Glide.with(getActivity())
@@ -234,7 +234,7 @@ public class ListNewsFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return newsList.size() + 1;
+            return newsList.size();
         }
 
         @Override
@@ -245,7 +245,7 @@ public class ListNewsFragment extends Fragment {
             if (position == newsList.size() + 1) {
                 return TYPE_FOOT_VIEW;
             }
-            if (newsList.get(position).getNewsImg().split("|").length < 3) {
+            if (newsList.get(position).getNewsImg().split("\\|").length < 3) {
                 return TYPE_ONE_PICTURE;
             } else {
                 return TYPE_THREE_PICTURE;

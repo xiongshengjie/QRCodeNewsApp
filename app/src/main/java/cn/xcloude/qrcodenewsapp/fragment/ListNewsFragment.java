@@ -2,6 +2,7 @@ package cn.xcloude.qrcodenewsapp.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -18,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.luck.picture.lib.decoration.RecycleViewDivider;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -94,8 +96,9 @@ public class ListNewsFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(OrientationHelper.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.addItemDecoration(new RecycleViewDivider(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL,2, ContextCompat.getColor(getActivity(),R.color.gray)));
         getNews();
-        if(newsAdapter == null){
+        if (newsAdapter == null) {
             newsAdapter = new NewsAdapter();
             recyclerView.setAdapter(newsAdapter);
         }
@@ -128,18 +131,20 @@ public class ListNewsFragment extends Fragment {
                     Gson gson = new Gson();
                     final ResponseResult<List<News>> serverResponse = gson.fromJson(response.body().string(), new TypeToken<ResponseResult<List<News>>>() {
                     }.getType());
-
                     final String message = serverResponse.getMessage();
                     if (serverResponse.getStatus() == Constants.SUCCESS) {
                         //获取新闻成功
-                        pageNum++;
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                for (News news : serverResponse.getResult()) {
-                                    newsList.add(news);
+
+                                if (serverResponse.getResult().size() > 0) {
+                                    for (News news : serverResponse.getResult()) {
+                                        newsList.add(news);
+                                    }
+                                    pageNum++;
+                                    newsAdapter.notifyDataSetChanged();
                                 }
-                                newsAdapter.notifyDataSetChanged();
                                 swipeRefreshLayout.setRefreshing(false);
                             }
                         });
@@ -207,7 +212,7 @@ public class ListNewsFragment extends Fragment {
                             .into(((OnePictureViewHolder) holder).newsPic);
 
                 }
-            } else if(holder instanceof ThreePictureViewHolder){
+            } else if (holder instanceof ThreePictureViewHolder) {
                 News news = newsList.get(position);
                 String imagePath = news.getNewsImg();
                 ((ThreePictureViewHolder) holder).newsTitle.setText(news.getNewsTitle());
@@ -239,7 +244,7 @@ public class ListNewsFragment extends Fragment {
 
         @Override
         public int getItemViewType(int position) {
-            if(newsList.size() == 0){
+            if (newsList.size() == 0) {
                 return TYPE_FOOT_VIEW;
             }
             if (position == newsList.size() + 1) {

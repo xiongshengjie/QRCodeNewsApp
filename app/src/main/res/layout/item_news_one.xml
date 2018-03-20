@@ -7,24 +7,28 @@
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="2"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/news_title"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:lines="2"
+            android:ellipsize="end"
             android:gravity="center_vertical"
             android:textSize="@dimen/text_news_title"
             android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/news_another"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:lines="1"
+            android:ellipsize="end"
             android:gravity="center_vertical"
             android:textSize="@dimen/text_medium"
             android:textColor="@color/black" />

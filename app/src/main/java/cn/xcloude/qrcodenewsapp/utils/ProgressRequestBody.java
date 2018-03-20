@@ -107,7 +107,7 @@ public class ProgressRequestBody extends RequestBody {
             switch (msg.what){
                 case R.string.update:
                     ProgressModel progressModel = (ProgressModel) msg.obj;
-                    if(progressListener != null){
+                    if(progressListener != null && progressModel.isDone() == false){
                         progressListener.onProgress(progressModel.getBytesWritten(), progressModel.getContentLength(), progressModel.isDone());
                     }
                     break;

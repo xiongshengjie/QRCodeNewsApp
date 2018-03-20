@@ -31,6 +31,7 @@ import com.bumptech.glide.request.RequestOptions;
 import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.BindView;

@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -89,7 +90,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
     @BindView(R.id.news_category)
     Spinner newsCategory;
 
-    private ProgressDialog dialog = null;
+    private ProgressDialog dialog;
 
     private List<File> files = new ArrayList<>();
     private List<NewsCategory> categories = new ArrayList<>();
@@ -305,9 +306,10 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
             @Override
             public void onProgress(long currentBytes, long contentLength, boolean done) {
 
-                int progress = (int) (currentBytes * 100 / contentLength);
+                    LogUtil.d("Publish",currentBytes + "/" + contentLength);
+                    int progress = (int) (currentBytes * 100 / contentLength);
 
-                dialog.setProgress(progress);
+                    dialog.setProgress(progress);
             }
         }, new Callback() {
             @Override

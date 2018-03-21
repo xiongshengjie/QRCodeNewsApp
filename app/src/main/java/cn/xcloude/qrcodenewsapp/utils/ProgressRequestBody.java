@@ -1,15 +1,9 @@
 package cn.xcloude.qrcodenewsapp.utils;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.io.IOException;
 
-import cn.xcloude.qrcodenewsapp.R;
-import cn.xcloude.qrcodenewsapp.entity.ProgressModel;
 import cn.xcloude.qrcodenewsapp.interfaces.ProgressListener;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -26,21 +20,15 @@ import okio.Sink;
 public class ProgressRequestBody extends RequestBody {
 
     //实际的待包装请求体
-    private  RequestBody requestBody;
+    private RequestBody requestBody;
     //进度回调接口
     private ProgressListener progressListener;
     //包装完成的BufferedSink
     private BufferedSink bufferedSink;
 
-    private ProgressHandler progressHandler;
-
     public ProgressRequestBody(RequestBody requestBody, ProgressListener progressListener) {
         this.requestBody = requestBody;
         this.progressListener = progressListener;
-
-        if(progressHandler ==null){
-            progressHandler = new ProgressHandler();
-        }
 
     }
 
@@ -57,7 +45,7 @@ public class ProgressRequestBody extends RequestBody {
 
     @Override
     public void writeTo(BufferedSink sink) throws IOException {
-        if(bufferedSink == null){
+        if (bufferedSink == null) {
             bufferedSink = Okio.buffer(sink(sink));
         }
 
@@ -68,6 +56,7 @@ public class ProgressRequestBody extends RequestBody {
 
     /**
      * 写入，回调进度接口
+     *
      * @param sink Sink
      * @return Sink
      */
@@ -88,31 +77,8 @@ public class ProgressRequestBody extends RequestBody {
                 //增加当前写入的字节数
                 bytesWritten += byteCount;
 
-                Message msg = Message.obtain();
-                msg.what = R.string.update;
-                msg.obj =  new ProgressModel(bytesWritten,contentLength,bytesWritten==contentLength);
-                progressHandler.sendMessage(msg);
+                progressListener.onProgress(bytesWritten, contentLength, bytesWritten == contentLength);
             }
         };
-    }
-
-    class ProgressHandler extends Handler{
-
-        public ProgressHandler() {
-            super(Looper.getMainLooper());
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
-                case R.string.update:
-                    ProgressModel progressModel = (ProgressModel) msg.obj;
-                    if(progressListener != null && progressModel.isDone() == false){
-                        progressListener.onProgress(progressModel.getBytesWritten(), progressModel.getContentLength(), progressModel.isDone());
-                    }
-                    break;
-            }
-        }
-
     }
 }

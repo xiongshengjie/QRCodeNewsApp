@@ -13,6 +13,7 @@ import cn.xcloude.qrcodenewsapp.entity.User;
 import cn.xcloude.qrcodenewsapp.interfaces.ProgressListener;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -33,18 +34,6 @@ public class OkHttpUtil {
 
     //发布新闻接口
     public static void postFile(String url, final ProgressListener listener, Callback callback, Map<String, String> params, List<File> files) {
-
-        okHttpClient.addInterceptor(new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request original = chain.request();
-
-                Request request = original.newBuilder()
-                        .method(original.method(), new ProgressRequestBody(original.body(), listener))
-                        .build();
-                return chain.proceed(request);
-            }
-        });
 
         MultipartBody.Builder builder = new MultipartBody.Builder();
         builder.setType(MultipartBody.FORM);

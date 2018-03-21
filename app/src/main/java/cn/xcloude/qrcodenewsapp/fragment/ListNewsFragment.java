@@ -50,11 +50,14 @@ public class ListNewsFragment extends Fragment {
 
     private int id, pageNum = 1;
     private String name;
+    private boolean isMore;
     private List<News> newsList = new ArrayList<>();
 
+    private LinearLayoutManager linearLayoutManager;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     private NewsAdapter newsAdapter;
+    private int lastVisibleItem;
 
     public ListNewsFragment() {
         // Required empty public constructor
@@ -93,15 +96,33 @@ public class ListNewsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_list_news, container, false);
         swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
         recyclerView = rootView.findViewById(R.id.news_list_view);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(OrientationHelper.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.addItemDecoration(new RecycleViewDivider(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL,2, ContextCompat.getColor(getActivity(),R.color.gray)));
+        recyclerView.addItemDecoration(new RecycleViewDivider(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, 2, ContextCompat.getColor(getActivity(), R.color.gray)));
         getNews();
         if (newsAdapter == null) {
             newsAdapter = new NewsAdapter();
-            recyclerView.setAdapter(newsAdapter);
         }
+        recyclerView.setAdapter(newsAdapter);
+
+        //设置上拉加载更多
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem + 1 == newsAdapter.getItemCount()) {
+                    getNews();
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+            }
+        });
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -142,8 +163,11 @@ public class ListNewsFragment extends Fragment {
                                     for (News news : serverResponse.getResult()) {
                                         newsList.add(news);
                                     }
+                                    isMore = true;
                                     pageNum++;
                                     newsAdapter.notifyDataSetChanged();
+                                }else{
+                                    isMore = false;
                                 }
                                 swipeRefreshLayout.setRefreshing(false);
                             }
@@ -239,7 +263,7 @@ public class ListNewsFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return newsList.size();
+            return newsList.size() + 1;
         }
 
         @Override
@@ -247,13 +271,14 @@ public class ListNewsFragment extends Fragment {
             if (newsList.size() == 0) {
                 return TYPE_FOOT_VIEW;
             }
-            if (position == newsList.size() + 1) {
+            if (position == newsList.size()) {
                 return TYPE_FOOT_VIEW;
-            }
-            if (newsList.get(position).getNewsImg().split("\\|").length < 3) {
-                return TYPE_ONE_PICTURE;
             } else {
-                return TYPE_THREE_PICTURE;
+                if (newsList.get(position).getNewsImg().split("\\|").length < 3) {
+                    return TYPE_ONE_PICTURE;
+                } else {
+                    return TYPE_THREE_PICTURE;
+                }
             }
         }
 

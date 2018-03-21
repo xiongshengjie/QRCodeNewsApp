@@ -215,7 +215,7 @@ public class ImproveInformationActivity extends AppCompatActivity {
                         editor.putInt("userSex", user.getUserSex());
                         editor.putString("userDescription", user.getUserDescription());
                         editor.putString("userHead", user.getUserHead());
-                        editor.commit();
+                        editor.apply();
                     } else {
                         runOnUiThread(new Runnable() {
                             @Override

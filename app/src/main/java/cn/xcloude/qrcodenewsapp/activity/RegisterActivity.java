@@ -251,7 +251,7 @@ public class RegisterActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = preferences.edit();
             editor.putLong("remainTime", remainTime);
             editor.putLong("currentTime", System.currentTimeMillis());
-            editor.commit();
+            editor.apply();
         }
         if (timeCount != null) {
             timeCount.cancel();

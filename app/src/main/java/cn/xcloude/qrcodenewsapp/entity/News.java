@@ -1,8 +1,9 @@
 package cn.xcloude.qrcodenewsapp.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class News {
+public class News implements Serializable{
     private String newsId;
 
     private String newsTitle;

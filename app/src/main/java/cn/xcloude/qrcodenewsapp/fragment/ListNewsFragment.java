@@ -50,7 +50,7 @@ public class ListNewsFragment extends Fragment {
 
     private int id, pageNum = 1;
     private String name;
-    private boolean isMore;
+    private boolean isMore = true;
     private List<News> newsList = new ArrayList<>();
 
     private LinearLayoutManager linearLayoutManager;
@@ -103,6 +103,7 @@ public class ListNewsFragment extends Fragment {
         getNews();
         if (newsAdapter == null) {
             newsAdapter = new NewsAdapter();
+            newsAdapter.setm
         }
         recyclerView.setAdapter(newsAdapter);
 
@@ -122,6 +123,8 @@ public class ListNewsFragment extends Fragment {
                 lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
             }
         });
+
+        recyclerView.setOnI
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -168,6 +171,7 @@ public class ListNewsFragment extends Fragment {
                                     newsAdapter.notifyDataSetChanged();
                                 }else{
                                     isMore = false;
+                                    newsAdapter.notifyItemChanged(newsList.size());
                                 }
                                 swipeRefreshLayout.setRefreshing(false);
                             }
@@ -258,6 +262,10 @@ public class ListNewsFragment extends Fragment {
                         .load(Constants.baseUrl + "/" + path[2])
                         .apply(options)
                         .into(((ThreePictureViewHolder) holder).imageViewThree);
+            }else if(holder instanceof FootViewHolder){
+                if(!isMore) {
+                    ((FootViewHolder) holder).loading.setText(R.string.no_more);
+                }
             }
         }
 

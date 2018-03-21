@@ -27,6 +27,7 @@
             android:id="@+id/image_url_one"
             android:layout_width="0dp"
             android:layout_height="@dimen/news_list_three_height"
+            android:layout_marginRight="@dimen/news_list_inner_padding"
             android:layout_weight="1" />
 
         <ImageView
@@ -39,6 +40,7 @@
             android:id="@+id/image_url_three"
             android:layout_width="0dp"
             android:layout_height="@dimen/news_list_three_height"
+            android:layout_marginLeft="@dimen/news_list_inner_padding"
             android:layout_weight="1"/>
 
 

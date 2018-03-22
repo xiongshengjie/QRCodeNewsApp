@@ -1,14 +1,18 @@
 package cn.xcloude.qrcodenewsapp.activity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -24,7 +28,7 @@ import cn.xcloude.qrcodenewsapp.constant.Constants;
 import cn.xcloude.qrcodenewsapp.entity.News;
 import cn.xcloude.qrcodenewsapp.entity.NewsCategory;
 
-public class NewsCotentActivity extends AppCompatActivity {
+public class NewsContentActivity extends AppCompatActivity {
 
     private News news;
 
@@ -36,11 +40,15 @@ public class NewsCotentActivity extends AppCompatActivity {
     WebView contentWebView;
     @BindView(R.id.head_toolbar)
     ImageView headToolbar;
+    @BindView(R.id.news_title)
+    TextView newsTitle;
+    @BindView(R.id.news_author)
+    TextView newsAuthor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_news_cotent);
+        setContentView(R.layout.activity_news_content);
         ButterKnife.bind(this);
 
         init();
@@ -54,12 +62,28 @@ public class NewsCotentActivity extends AppCompatActivity {
     private void initView() {
         contentWebView.setWebViewClient(new WebViewClient() {
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                view.loadUrl(request.getUrl().toString());
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+                WebView.HitTestResult hit = view.getHitTestResult();
+                if (hit != null) {
+                    int hitType = hit.getType();
+                    if (hitType == WebView.HitTestResult.SRC_ANCHOR_TYPE
+                            || hitType == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {// 点击超链接
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(url));
+                        startActivity(i);
+                    } else {
+                        view.loadUrl(url);
+                    }
+                } else {
+                    view.loadUrl(url);
+                }
                 return true;
             }
         });
 
+        newsTitle.setText(news.getNewsTitle());
+        newsAuthor.setText(news.getNewsAuthor());
         setSupportActionBar(contentToolBar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -75,10 +99,22 @@ public class NewsCotentActivity extends AppCompatActivity {
         RequestOptions options = new RequestOptions()
                 .error(R.drawable.default_background);
 
-        Glide.with(NewsCotentActivity.this)
+        Glide.with(NewsContentActivity.this)
                 .load(Constants.baseUrl + "/" + news.getNewsImg().split("\\|")[0])
                 .apply(options)
                 .into(headToolbar);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 
 

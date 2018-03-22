@@ -100,7 +100,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
      */
     private KeyboardHeightProvider keyboardHeightProvider;
     private boolean isKeyboardShowing;
-    private String htmlContent = "<p>新闻正文</p>";
+    private String htmlContent = "<p><br></p>";
 
     private RichEditorAction mRichEditorAction;
     private RichEditorCallback mRichEditorCallback;

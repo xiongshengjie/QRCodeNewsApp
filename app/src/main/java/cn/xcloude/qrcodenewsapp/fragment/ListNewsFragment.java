@@ -1,5 +1,6 @@
 package cn.xcloude.qrcodenewsapp.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -28,9 +29,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.xcloude.qrcodenewsapp.R;
+import cn.xcloude.qrcodenewsapp.activity.NewsContentActivity;
 import cn.xcloude.qrcodenewsapp.constant.Constants;
 import cn.xcloude.qrcodenewsapp.entity.News;
 import cn.xcloude.qrcodenewsapp.entity.ResponseResult;
+import cn.xcloude.qrcodenewsapp.interfaces.OnItemClickListener;
 import cn.xcloude.qrcodenewsapp.utils.OkHttpUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -103,8 +106,18 @@ public class ListNewsFragment extends Fragment {
         getNews();
         if (newsAdapter == null) {
             newsAdapter = new NewsAdapter();
-            newsAdapter.setm
         }
+        newsAdapter.setmOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                News news = newsList.get(position);
+                Intent intent = new Intent(getActivity(), NewsContentActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("news",news);
+                intent.putExtras(bundle);
+                getActivity().startActivity(intent);
+            }
+        });
         recyclerView.setAdapter(newsAdapter);
 
         //设置上拉加载更多
@@ -123,8 +136,6 @@ public class ListNewsFragment extends Fragment {
                 lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
             }
         });
-
-        recyclerView.setOnI
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -199,20 +210,28 @@ public class ListNewsFragment extends Fragment {
         });
     }
 
-    class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener {
 
         private static final int TYPE_ONE_PICTURE = 0;
         private static final int TYPE_THREE_PICTURE = 1;
         private static final int TYPE_FOOT_VIEW = 2;
+
+        public void setmOnItemClickListener(OnItemClickListener mOnItemClickListener) {
+            this.mOnItemClickListener = mOnItemClickListener;
+        }
+
+        private OnItemClickListener mOnItemClickListener;
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view;
             if (viewType == TYPE_ONE_PICTURE) {
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_news_one, parent, false);
+                view.setOnClickListener(this);
                 return new OnePictureViewHolder(view);
             } else if (viewType == TYPE_THREE_PICTURE) {
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_news_three, parent, false);
+                view.setOnClickListener(this);
                 return new ThreePictureViewHolder(view);
             } else {
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_foot, parent, false);
@@ -227,6 +246,7 @@ public class ListNewsFragment extends Fragment {
             }
             if (holder instanceof OnePictureViewHolder) {
                 News news = newsList.get(position);
+                holder.itemView.setTag(position);
                 String imagePath = news.getNewsImg();
                 ((OnePictureViewHolder) holder).newsTitle.setText(news.getNewsTitle());
                 ((OnePictureViewHolder) holder).newsAnother.setText(news.getNewsAuthor());
@@ -242,6 +262,7 @@ public class ListNewsFragment extends Fragment {
                 }
             } else if (holder instanceof ThreePictureViewHolder) {
                 News news = newsList.get(position);
+                holder.itemView.setTag(position);
                 String imagePath = news.getNewsImg();
                 ((ThreePictureViewHolder) holder).newsTitle.setText(news.getNewsTitle());
                 ((ThreePictureViewHolder) holder).newsAnother.setText(news.getNewsAuthor());
@@ -287,6 +308,13 @@ public class ListNewsFragment extends Fragment {
                 } else {
                     return TYPE_THREE_PICTURE;
                 }
+            }
+        }
+
+        @Override
+        public void onClick(View view) {
+            if(mOnItemClickListener != null){
+                mOnItemClickListener.onItemClick(view,(int)view.getTag());
             }
         }
 

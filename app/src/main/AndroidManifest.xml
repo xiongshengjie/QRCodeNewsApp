@@ -37,7 +37,7 @@
         <activity
             android:name=".activity.ImproveInformationActivity"
             android:label="@string/improve_information" />
-        <activity android:name=".activity.NewsCotentActivity"></activity>
+        <activity android:name=".activity.NewsContentActivity"></activity>
     </application>
 
 </manifest>

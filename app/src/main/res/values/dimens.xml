@@ -25,5 +25,6 @@
   <dimen name="person_center_head_padding_right">15dp</dimen>
   <dimen name="news_list_padding">5dp</dimen>
   <dimen name="news_list_inner_padding">2dp</dimen>
+  <dimen name="news_title_inner_padding">10dp</dimen>
   <dimen name="news_list_three_height">80dp</dimen>
 </resources>

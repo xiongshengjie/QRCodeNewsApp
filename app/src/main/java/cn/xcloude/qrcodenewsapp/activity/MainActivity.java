@@ -24,14 +24,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.zxing.client.android.CaptureActivity;
 
 import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -228,10 +229,45 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.qr_scanner:
                 //扫码
+                intent = new Intent(this, CaptureActivity.class);
+                //是否显示相册按钮
+                intent.putExtra(CaptureActivity.INTENT_KEY_PHOTO_FLAG, true);
+                //识别声音
+                intent.putExtra(CaptureActivity.INTENT_KEY_BEEP_FLAG, true);
+                //识别震动
+                intent.putExtra(CaptureActivity.INTENT_KEY_VIBRATE_FLAG, true);
+                //扫码框的颜色
+                intent.putExtra(CaptureActivity.INTENT_KEY_SCSNCOLOR, "#FFFF00");
+                //扫码框上面的提示文案
+                intent.putExtra(CaptureActivity.INTENT_KEY_HINTTEXT, "将二维码放置在框内，即开始扫描");
+                startActivityForResult(intent, 1000);
                 break;
             default:
         }
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1000) {
+            if (data == null) {
+                return;
+            }
+            switch (resultCode) {
+                case CaptureActivity.RESULT_SUCCESS:
+                    String resultSuccess = data.getStringExtra(CaptureActivity.INTENT_KEY_RESULT_SUCCESS);
+                    Toast.makeText(MainActivity.this,resultSuccess,Toast.LENGTH_SHORT).show();
+                    break;
+                case CaptureActivity.RESULT_FAIL:
+                    String resultError = data.getStringExtra(CaptureActivity.INTENT_KEY_RESULT_ERROR);
+                    Toast.makeText(MainActivity.this,resultError,Toast.LENGTH_SHORT).show();
+                    break;
+                case CaptureActivity.RESULT_CANCLE:
+                    Toast.makeText(MainActivity.this,"取消",Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
     }
 
     /**

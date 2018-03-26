@@ -233,13 +233,13 @@ public class MainActivity extends AppCompatActivity {
                 //是否显示相册按钮
                 intent.putExtra(CaptureActivity.INTENT_KEY_PHOTO_FLAG, true);
                 //识别声音
-                intent.putExtra(CaptureActivity.INTENT_KEY_BEEP_FLAG, true);
+                intent.putExtra(CaptureActivity.INTENT_KEY_BEEP_FLAG, false);
                 //识别震动
                 intent.putExtra(CaptureActivity.INTENT_KEY_VIBRATE_FLAG, true);
                 //扫码框的颜色
-                intent.putExtra(CaptureActivity.INTENT_KEY_SCSNCOLOR, "#FFFF00");
+                intent.putExtra(CaptureActivity.INTENT_KEY_SCSNCOLOR, R.color.scan);
                 //扫码框上面的提示文案
-                intent.putExtra(CaptureActivity.INTENT_KEY_HINTTEXT, "将二维码放置在框内，即开始扫描");
+                intent.putExtra(CaptureActivity.INTENT_KEY_HINTTEXT, R.string.scan_notice);
                 startActivityForResult(intent, 1000);
                 break;
             default:

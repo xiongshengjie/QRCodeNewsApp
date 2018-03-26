@@ -57,6 +57,7 @@
     <string name="person_logout">退出登录</string>
     <string name="person_information">个人信息</string>
     <string name="no_more">没有更多</string>
+    <string name="scan_notice">将二维码放置在框内，即开始扫描</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

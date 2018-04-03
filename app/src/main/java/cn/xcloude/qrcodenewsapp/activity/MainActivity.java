@@ -31,6 +31,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.zxing.client.android.CaptureActivity;
+import com.nineoldandroids.view.ViewHelper;
 
 import org.litepal.crud.DataSupport;
 
@@ -162,11 +163,9 @@ public class MainActivity extends AppCompatActivity {
             drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
                 @Override
                 public void onDrawerSlide(View drawerView, float slideOffset) {
-                    WindowManager manager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-                    DisplayMetrics dm = new DisplayMetrics();
-                    manager.getDefaultDisplay().getMetrics(dm);
-                    mainCoordinatorLayout.layout(navView.getRight(), 0,
-                            navView.getRight() + dm.widthPixels, dm.heightPixels);
+                    View mContent = drawerLayout.getChildAt(0);
+                    ViewHelper.setTranslationX(mContent,
+                            navView.getMeasuredWidth() * slideOffset);
                 }
 
                 @Override

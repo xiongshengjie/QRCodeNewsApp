@@ -28,10 +28,13 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.zxing.client.android.CaptureActivity;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,9 +42,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.xcloude.qrcodenewsapp.R;
 import cn.xcloude.qrcodenewsapp.constant.Constants;
+import cn.xcloude.qrcodenewsapp.entity.News;
 import cn.xcloude.qrcodenewsapp.entity.NewsCategory;
+import cn.xcloude.qrcodenewsapp.entity.ResponseResult;
 import cn.xcloude.qrcodenewsapp.fragment.ListNewsFragment;
+import cn.xcloude.qrcodenewsapp.utils.OkHttpUtil;
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
+import static cn.xcloude.qrcodenewsapp.constant.Constants.PREFIX;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -183,6 +194,8 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.person_publish:
                         //我的发布界面
+                        Intent persongIntent = new Intent(MainActivity.this,MyPublishActivity.class);
+                        startActivity(persongIntent);
                         break;
                     case R.id.person_information:
                         //修改个人信息
@@ -257,14 +270,62 @@ public class MainActivity extends AppCompatActivity {
             switch (resultCode) {
                 case CaptureActivity.RESULT_SUCCESS:
                     String resultSuccess = data.getStringExtra(CaptureActivity.INTENT_KEY_RESULT_SUCCESS);
-                    Toast.makeText(MainActivity.this,resultSuccess,Toast.LENGTH_SHORT).show();
+                    //二维码格式正确
+                    if (resultSuccess != null && resultSuccess.length() > 7 && PREFIX.equals(resultSuccess.substring(0, 7))) {
+                        String id = resultSuccess.substring(7, resultSuccess.length());
+                        OkHttpUtil.getNewsById(id, new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(MainActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                if (response.code() == 200) {
+                                    Gson gson = new Gson();
+                                    ResponseResult<News> serverResponse = gson.fromJson(response.body().string(), new TypeToken<ResponseResult<News>>() {
+                                    }.getType());
+                                    int statu = serverResponse.getStatus();
+                                    final String message = serverResponse.getMessage();
+                                    if (statu == Constants.SUCCESS) {
+                                        Intent intent = new Intent(MainActivity.this, NewsContentActivity.class);
+                                        Bundle bundle = new Bundle();
+                                        bundle.putSerializable("news", serverResponse.getResult());
+                                        intent.putExtras(bundle);
+                                        startActivity(intent);
+                                    } else {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+                                } else {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(MainActivity.this, R.string.server_error, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    } else {
+                        Toast.makeText(MainActivity.this, R.string.error_code, Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case CaptureActivity.RESULT_FAIL:
                     String resultError = data.getStringExtra(CaptureActivity.INTENT_KEY_RESULT_ERROR);
-                    Toast.makeText(MainActivity.this,resultError,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.error_code, Toast.LENGTH_SHORT).show();
                     break;
                 case CaptureActivity.RESULT_CANCLE:
-                    Toast.makeText(MainActivity.this,"取消",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.cancle, Toast.LENGTH_SHORT).show();
                     break;
             }
         }

@@ -3,7 +3,6 @@ package cn.xcloude.qrcodenewsapp.utils;
 import android.text.TextUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -13,14 +12,11 @@ import cn.xcloude.qrcodenewsapp.entity.User;
 import cn.xcloude.qrcodenewsapp.interfaces.ProgressListener;
 import okhttp3.Callback;
 import okhttp3.FormBody;
-import okhttp3.Headers;
-import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 /**
  * Created by Administrator on 2018/2/21.
@@ -101,6 +97,18 @@ public class OkHttpUtil {
     public static void listNews(int category, int pageNum, int pageCount, Callback callback) {
         RequestBody requestBody = new FormBody.Builder().add("category", category + "").add("pageNum", pageNum + "").add("pageCount", pageCount + "").build();
         Request request = new Request.Builder().url(Constants.listNews).post(requestBody).build();
+        okHttpClient.build().newCall(request).enqueue(callback);
+    }
+
+    public static void getNewsById(String id, Callback callback) {
+        RequestBody requestBody = new FormBody.Builder().add("id", id).build();
+        Request request = new Request.Builder().url(Constants.getNewsById).post(requestBody).build();
+        okHttpClient.build().newCall(request).enqueue(callback);
+    }
+
+    public static void listNewsByUser(String id, int pageNum, int pageCount, Callback callback) {
+        RequestBody requestBody = new FormBody.Builder().add("userId", id).add("pageNum", pageNum + "").add("pageCount", pageCount + "").build();
+        Request request = new Request.Builder().url(Constants.listNewsByUser).post(requestBody).build();
         okHttpClient.build().newCall(request).enqueue(callback);
     }
 }

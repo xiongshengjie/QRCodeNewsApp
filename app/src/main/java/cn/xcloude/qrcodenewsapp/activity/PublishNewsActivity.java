@@ -8,24 +8,27 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -36,6 +39,7 @@ import com.even.mricheditor.RichEditorCallback;
 import com.even.mricheditor.ui.ActionImageView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.zxing.client.android.utils.ZXingUtils;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
@@ -73,6 +77,8 @@ import cn.xcloude.qrcodenewsapp.utils.OkHttpUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+
+import static cn.xcloude.qrcodenewsapp.constant.Constants.PREFIX;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class PublishNewsActivity extends AppCompatActivity implements KeyboardHeightObserver {
@@ -259,6 +265,8 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             final Map<String, String> params = new HashMap<>();
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(mWebView.getWindowToken(),0);
                             params.put("title", title);
                             params.put("author", getSharedPreferences("User", Context.MODE_PRIVATE).getString("userId", null));
                             params.put("category", category.toString());
@@ -306,10 +314,10 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
             @Override
             public void onProgress(long currentBytes, long contentLength, boolean done) {
 
-                    LogUtil.d("Publish",currentBytes + "/" + contentLength);
-                    int progress = (int) (currentBytes * 100 / contentLength);
+                LogUtil.d("Publish", currentBytes + "/" + contentLength);
+                int progress = (int) (currentBytes * 100 / contentLength);
 
-                    dialog.setProgress(progress);
+                dialog.setProgress(progress);
             }
         }, new Callback() {
             @Override
@@ -331,6 +339,8 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                     }.getType());
                     int status = result.getStatus();
                     final String message = result.getMessage();
+                    //成功之后的操作
+                    final News news = result.getResult();
 
                     //发布成功
                     if (status == Constants.SUCCESS) {
@@ -338,11 +348,40 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                             @Override
                             public void run() {
                                 dialog.setMessage(message);
+                                dialog.dismiss();
+
+                                View shareView = getLayoutInflater().inflate(R.layout.share_dialog, (ViewGroup) findViewById(R.id.ll_qrcode));
+                                ImageView shareImage = shareView.findViewById(R.id.QRCode);
+                                final Bitmap share = ZXingUtils.createQRImage(PREFIX + news.getNewsId());
+                                shareImage.setImageBitmap(share);
+                                new AlertDialog.Builder(PublishNewsActivity.this)
+                                        .setView(shareView)
+                                        .setTitle("将新闻分享给你的好友")
+                                        .setPositiveButton("分享", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                Intent sendIntent = new Intent();
+                                                sendIntent.setAction(Intent.ACTION_SEND);
+                                                sendIntent.setType("image/*");
+                                                sendIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                                sendIntent.putExtra("Kdescription", "快来看我新发布的新闻");
+                                                sendIntent.putExtra(Intent.EXTRA_TEXT, "快来看我新发布的新闻");
+                                                sendIntent.putExtra(Intent.EXTRA_SUBJECT, "新闻");
+                                                sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), share, null,null)));
+                                                startActivity(Intent.createChooser(sendIntent, "发送给好友或分享到朋友圈"));
+                                                PublishNewsActivity.this.finish();
+                                            }
+                                        })
+                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                PublishNewsActivity.this.finish();
+                                            }
+                                        })
+                                        .setCancelable(false)
+                                        .show();
                             }
                         });
-                        dialog.dismiss();
-                        //成功之后的操作
-
 
                     } else {
                         //发布失败

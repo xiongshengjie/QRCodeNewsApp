@@ -16,8 +16,10 @@ public final class Constants {
 
     public static final long SMS_OUTOFDATE= 120500L;
 
+    public static final String PREFIX = "msxw://";
+
     //public static String baseUrl = "https://www.xcloude.cn/QRCodeNews";
-    public static final String baseUrl = "http://192.168.0.103:8080/QRCodeNews";
+    public static final String baseUrl = "http://192.168.0.102:8080/QRCodeNews";
 //    public static final String baseUrl = "http://10.4.0.217:8080/QRCodeNews";
 
     public static final String upload = baseUrl + "/news/publish";
@@ -27,4 +29,6 @@ public final class Constants {
     public static final String checkSmsCode = baseUrl + "/user/checkSmsCode";
     public static final String userRegister = baseUrl + "/user/register";
     public static final String listNews = baseUrl + "/news/list";
+    public static final String getNewsById = baseUrl + "/news/getNewsById";
+    public static final String listNewsByUser = baseUrl + "/news/listNewsByUser";
 }

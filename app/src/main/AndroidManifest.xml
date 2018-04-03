@@ -39,7 +39,9 @@
         <activity
             android:name=".activity.ImproveInformationActivity"
             android:label="@string/improve_information" />
-        <activity android:name=".activity.NewsContentActivity"></activity>
+        <activity android:name=".activity.NewsContentActivity" />
+        <activity android:name=".activity.MyPublishActivity"
+            android:label="@string/person_publish"></activity>
     </application>
 
 </manifest>

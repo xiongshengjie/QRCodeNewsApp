@@ -125,7 +125,7 @@ public class ListNewsFragment extends Fragment {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem + 1 == newsAdapter.getItemCount()) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem + 1 == newsAdapter.getItemCount() && isMore) {
                     getNews();
                 }
             }
@@ -173,14 +173,17 @@ public class ListNewsFragment extends Fragment {
                             @Override
                             public void run() {
 
-                                if (serverResponse.getResult().size() > 0) {
-                                    for (News news : serverResponse.getResult()) {
-                                        newsList.add(news);
-                                    }
+                                if (serverResponse.getResult().size() == PAGESIZE) {
+                                    newsList.addAll(serverResponse.getResult());
                                     isMore = true;
                                     pageNum++;
-                                    newsAdapter.notifyDataSetChanged();
-                                }else{
+                                    newsAdapter.notifyItemRangeChanged(newsList.size() - PAGESIZE,PAGESIZE);
+                                }else if(serverResponse.getResult().size() > 0){
+                                    newsList.addAll(serverResponse.getResult());
+                                    pageNum++;
+                                    isMore = false;
+                                    newsAdapter.notifyItemRangeChanged(newsList.size() - serverResponse.getResult().size(),serverResponse.getResult().size());
+                                }else {
                                     isMore = false;
                                     newsAdapter.notifyItemChanged(newsList.size());
                                 }
@@ -241,9 +244,6 @@ public class ListNewsFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if (position == newsList.size() + 1) {
-                return;
-            }
             if (holder instanceof OnePictureViewHolder) {
                 News news = newsList.get(position);
                 holder.itemView.setTag(position);
@@ -254,11 +254,14 @@ public class ListNewsFragment extends Fragment {
                     imagePath = imagePath.split("\\|")[0];
                     RequestOptions options = new RequestOptions();
                     options.centerCrop();
+                    ((OnePictureViewHolder) holder).newsPic.setVisibility(View.VISIBLE);
                     Glide.with(getActivity())
                             .load(Constants.baseUrl + "/" + imagePath)
                             .apply(options)
                             .into(((OnePictureViewHolder) holder).newsPic);
 
+                }else {
+                    ((OnePictureViewHolder) holder).newsPic.setVisibility(View.GONE);
                 }
             } else if (holder instanceof ThreePictureViewHolder) {
                 News news = newsList.get(position);
@@ -297,9 +300,6 @@ public class ListNewsFragment extends Fragment {
 
         @Override
         public int getItemViewType(int position) {
-            if (newsList.size() == 0) {
-                return TYPE_FOOT_VIEW;
-            }
             if (position == newsList.size()) {
                 return TYPE_FOOT_VIEW;
             } else {

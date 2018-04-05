@@ -13,12 +13,16 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -96,7 +100,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
     @BindView(R.id.news_category)
     Spinner newsCategory;
 
-    private ProgressDialog dialog;
+    private ProgressDialog dialog, firstDialog;
 
     private List<File> files = new ArrayList<>();
     private List<NewsCategory> categories = new ArrayList<>();
@@ -140,6 +144,12 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_publish_news);
         ButterKnife.bind(this);
+
+        firstDialog = new ProgressDialog(PublishNewsActivity.this, ProgressDialog.STYLE_SPINNER);
+        firstDialog.setCancelable(false);
+        firstDialog.setCanceledOnTouchOutside(false);
+        firstDialog.setMessage("加载中...");
+        firstDialog.show();
 
         initView();
 
@@ -216,6 +226,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
         public void onProgressChanged(WebView view, int newProgress) {
             super.onProgressChanged(view, newProgress);
             if (newProgress == 100) {
+                firstDialog.dismiss();
                 if (!TextUtils.isEmpty(htmlContent)) {
                     mRichEditorAction.insertHtml(htmlContent);
                 }
@@ -266,7 +277,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                         public void onClick(DialogInterface dialogInterface, int i) {
                             final Map<String, String> params = new HashMap<>();
                             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(mWebView.getWindowToken(),0);
+                            imm.hideSoftInputFromWindow(mWebView.getWindowToken(), 0);
                             params.put("title", title);
                             params.put("author", getSharedPreferences("User", Context.MODE_PRIVATE).getString("userId", null));
                             params.put("category", category.toString());
@@ -363,11 +374,11 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                                                 Intent sendIntent = new Intent();
                                                 sendIntent.setAction(Intent.ACTION_SEND);
                                                 sendIntent.setType("image/*");
-                                                sendIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                                sendIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                                                 sendIntent.putExtra("Kdescription", "快来看我新发布的新闻");
                                                 sendIntent.putExtra(Intent.EXTRA_TEXT, "快来看我新发布的新闻");
                                                 sendIntent.putExtra(Intent.EXTRA_SUBJECT, "新闻");
-                                                sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), share, null,null)));
+                                                sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), share, null, null)));
                                                 startActivity(Intent.createChooser(sendIntent, "发送给好友或分享到朋友圈"));
                                                 PublishNewsActivity.this.finish();
                                             }
@@ -406,19 +417,19 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
         }, params, files);
     }
 
-    @OnClick(R.id.iv_get_html)
-    void onClickGetHtml() {
-        mRichEditorAction.refreshHtml(mRichEditorCallback, onGetHtmlListener);
-    }
-
     @OnClick(R.id.iv_action_undo)
-    void onClickUndo() {
+    void onClickUndo(){
         mRichEditorAction.undo();
     }
 
     @OnClick(R.id.iv_action_redo)
-    void onClickRedo() {
+    void onClickRedo(){
         mRichEditorAction.redo();
+    }
+
+    @OnClick(R.id.iv_get_html)
+    void onClickGetHtml(){
+        mRichEditorAction.refreshHtml(mRichEditorCallback, onGetHtmlListener);
     }
 
     @OnClick(R.id.iv_action_txt_color)

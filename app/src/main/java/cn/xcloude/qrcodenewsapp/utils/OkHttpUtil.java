@@ -94,6 +94,27 @@ public class OkHttpUtil {
         okHttpClient.build().newCall(request).enqueue(callback);
     }
 
+    //修改
+    public static void update(User user, boolean isModifyHead, Callback callback) {
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        builder.setType(MultipartBody.FORM);
+        builder.addFormDataPart("userNickname", user.getUserNickname())
+                .addFormDataPart("userName", user.getUserName())
+                .addFormDataPart("userMobile", user.getUserMobile())
+                .addFormDataPart("userPassword", user.getUserPassword())
+                .addFormDataPart("userSex", user.getUserSex().toString())
+                .addFormDataPart("userDescription", user.getUserDescription())
+                .addFormDataPart("userId",user.getUserId())
+                .addFormDataPart("userHead",user.getUserHead());
+        if (isModifyHead) {
+            File file = new File(user.getUserHead());
+            builder.addFormDataPart("headFile", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file));
+        }
+        RequestBody requestBody = builder.build();
+        Request request = new Request.Builder().url(Constants.userUpdate).post(requestBody).build();
+        okHttpClient.build().newCall(request).enqueue(callback);
+    }
+
     public static void listNews(int category, int pageNum, int pageCount, Callback callback) {
         RequestBody requestBody = new FormBody.Builder().add("category", category + "").add("pageNum", pageNum + "").add("pageCount", pageCount + "").build();
         Request request = new Request.Builder().url(Constants.listNews).post(requestBody).build();
@@ -109,6 +130,12 @@ public class OkHttpUtil {
     public static void listNewsByUser(String id, int pageNum, int pageCount, Callback callback) {
         RequestBody requestBody = new FormBody.Builder().add("userId", id).add("pageNum", pageNum + "").add("pageCount", pageCount + "").build();
         Request request = new Request.Builder().url(Constants.listNewsByUser).post(requestBody).build();
+        okHttpClient.build().newCall(request).enqueue(callback);
+    }
+
+    public static void delNews(String id , Callback callback){
+        RequestBody requestBody = new FormBody.Builder().add("newsId",id).build();
+        Request request = new Request.Builder().url(Constants.delNews).post(requestBody).build();
         okHttpClient.build().newCall(request).enqueue(callback);
     }
 }

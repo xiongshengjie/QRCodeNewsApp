@@ -1,6 +1,7 @@
 package cn.xcloude.qrcodenewsapp.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -10,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -148,8 +150,9 @@ public class MyPublishActivity extends AppCompatActivity {
         newsListRecyclerView.setSwipeMenuItemClickListener(new SwipeMenuItemClickListener(){
             @Override
             public void onItemClick(SwipeMenuBridge menuBridge) {
+                final int position = menuBridge.getAdapterPosition();
+                final News news = newsList.get(position);
                 if(menuBridge.getPosition() == 0){
-                    News news = newsList.get(menuBridge.getAdapterPosition());
                     Bitmap share = ZXingUtils.createQRImage(PREFIX + news.getNewsId());
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
@@ -162,8 +165,69 @@ public class MyPublishActivity extends AppCompatActivity {
                     startActivity(Intent.createChooser(sendIntent, "发送给好友或分享到朋友圈"));
                 }else {
                     //删除
-                    newsList.remove(menuBridge.getAdapterPosition());
-                    newsAdapter.notifyItemRemoved(menuBridge.getAdapterPosition());
+                    AlertDialog dialog = new AlertDialog.Builder(MyPublishActivity.this)
+                            .setTitle(R.string.title)
+                            .setMessage(R.string.del_message)
+                            .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    OkHttpUtil.delNews(news.getNewsId(), new Callback() {
+                                        @Override
+                                        public void onFailure(Call call, IOException e) {
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Toast.makeText(MyPublishActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
+                                                    swipeRefreshLayout.setRefreshing(false);
+                                                }
+                                            });
+                                        }
+
+                                        @Override
+                                        public void onResponse(Call call, Response response) throws IOException {
+                                            if (response.code() == 200) {
+                                                Gson gson = new Gson();
+                                                final ResponseResult<Object> serverResponse = gson.fromJson(response.body().string(), new TypeToken<ResponseResult<Object>>() {
+                                                }.getType());
+                                                final String message = serverResponse.getMessage();
+                                                if (serverResponse.getStatus() == Constants.SUCCESS) {
+                                                    //删除新闻成功
+                                                    runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            newsList.remove(position);
+                                                            newsAdapter.notifyItemRemoved(position);
+                                                            Toast.makeText(MyPublishActivity.this,R.string.del_success,Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                                } else {
+                                                    //删除新闻失败
+                                                    runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            Toast.makeText(MyPublishActivity.this, message, Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                                }
+                                            } else {
+                                                runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        Toast.makeText(MyPublishActivity.this, R.string.server_error, Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
+                            })
+                            .setNegativeButton(R.string.cancle, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    
+                                }
+                            })
+                            .show();
                 }
                 menuBridge.closeMenu();
             }

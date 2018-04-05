@@ -31,6 +31,7 @@
     <string name="user_head">头像</string>
     <string name="user_description">简介</string>
     <string name="publish_message">确认发布？</string>
+    <string name="del_message">确认删除？</string>
     <string name="publish">发布</string>
     <string name="scan">扫码</string>
     <string name="cancle">取消</string>
@@ -42,6 +43,7 @@
     <string name="network_error">网络错误</string>
     <string name="login">登录</string>
     <string name="register">注册</string>
+    <string name="modify">修改</string>
     <string name="next_step">下一步</string>
     <string name="watch_news_direct">直接看新闻</string>
     <string name="not_input_username">请输入用户名</string>
@@ -59,6 +61,7 @@
     <string name="no_more">没有更多</string>
     <string name="scan_notice">将二维码放置在框内，即开始扫描</string>
     <string name="error_code">二维码有误</string>
+    <string name="del_success">删除成功</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -193,11 +193,13 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.person_publish:
                         //我的发布界面
-                        Intent persongIntent = new Intent(MainActivity.this,MyPublishActivity.class);
-                        startActivity(persongIntent);
+                        Intent personIntent = new Intent(MainActivity.this,MyPublishActivity.class);
+                        startActivity(personIntent);
                         break;
                     case R.id.person_information:
                         //修改个人信息
+                        Intent modifyIntent = new Intent(MainActivity.this, ModifyInfoActivity.class);
+                        startActivity(modifyIntent);
                         break;
                     case R.id.person_logout:
                         Intent intent = new Intent(MainActivity.this, LoginMainActivity.class);

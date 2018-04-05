@@ -4,10 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -41,7 +41,10 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class ImproveInformationActivity extends AppCompatActivity {
+public class ModifyInfoActivity extends AppCompatActivity {
+
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
     private String mobile;
 
@@ -69,40 +72,44 @@ public class ImproveInformationActivity extends AppCompatActivity {
     private String headPath;
     private ProgressDialog dialog = null;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_improve_information);
+        setContentView(R.layout.activity_modify_info);
         ButterKnife.bind(this);
-        Intent intent = getIntent();
-        mobile = intent.getStringExtra("userMobile");
-        initViews();
+
+        sharedPreferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+        initView();
     }
 
-    private void initViews() {
+    private void initView(){
         setSupportActionBar(improveToolbar);
         improveToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ImproveInformationActivity.this.finish();
+                ModifyInfoActivity.this.finish();
             }
         });
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        etMobile.setText(mobile);
-        etUsername.setText(mobile);
-        tvRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                register();
-            }
-        });
+        etMobile.setText(sharedPreferences.getString("userMobile",null));
+        etUsername.setText(sharedPreferences.getString("userName",null));
+        etPassword.setText(sharedPreferences.getString("userPassWord",null));
+        etRePassword.setText(sharedPreferences.getString("userPassWord",null));
+        etDescription.setText(sharedPreferences.getString("userDescription",null));
+        etNickname.setText(sharedPreferences.getString("userNickname",null));
+        RadioButton check = (RadioButton) rgSex.getChildAt(sharedPreferences.getInt("userSex",0));
+        check.setChecked(true);
+        RequestOptions options = new RequestOptions();
+        options.centerCrop();
+        Glide.with(this).load(Constants.baseUrl + "/" + sharedPreferences.getString("userHead",null)).apply(options).into(pickHead);
+
         pickHead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PictureSelector.create(ImproveInformationActivity.this)
+                PictureSelector.create(ModifyInfoActivity.this)
                         .openGallery(PictureMimeType.ofImage())
                         .imageSpanCount(4)
                         .selectionMode(PictureConfig.SINGLE)
@@ -119,6 +126,13 @@ public class ImproveInformationActivity extends AppCompatActivity {
                         .cropWH(256, 256)
                         .minimumCompressSize(20)
                         .forResult(PictureConfig.CHOOSE_REQUEST);
+            }
+        });
+
+        tvRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                update();
             }
         });
     }
@@ -150,12 +164,13 @@ public class ImproveInformationActivity extends AppCompatActivity {
         }
     }
 
-    private void register() {
+    private void update() {
         String username = etUsername.getText().toString();
         String nickname = etNickname.getText().toString();
         String password = etPassword.getText().toString();
         String rePassword = etRePassword.getText().toString();
         String description = etDescription.getText().toString();
+        mobile = etMobile.getText().toString();
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(rePassword) || TextUtils.isEmpty(nickname)) {
             Toast.makeText(this, R.string.improve_information, Toast.LENGTH_SHORT).show();
             return;
@@ -167,24 +182,31 @@ public class ImproveInformationActivity extends AppCompatActivity {
 
         RadioButton radioButton = findViewById(rgSex.getCheckedRadioButtonId());
         int sex = rgSex.indexOfChild(radioButton);
-        User user = new User(null, username, password, nickname, mobile, sex, description, headPath);
+        Boolean isModifyHead = false;
+        User user;
+        if(headPath == null){
+            user = new User(sharedPreferences.getString("userId",null), username, password, nickname, mobile, sex, description, sharedPreferences.getString("userHead",null));
+        }else {
+            isModifyHead = true;
+            user = new User(sharedPreferences.getString("userId",null), username, password, nickname, mobile, sex, description, headPath);
+        }
 
         if (dialog == null) {
-            dialog = new ProgressDialog(ImproveInformationActivity.this, ProgressDialog.STYLE_SPINNER);
+            dialog = new ProgressDialog(ModifyInfoActivity.this, ProgressDialog.STYLE_SPINNER);
         }
 
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.setMessage("注册中");
+        dialog.setMessage("修改中");
         dialog.show();
 
-        OkHttpUtil.register(user, new Callback() {
+        OkHttpUtil.update(user,isModifyHead, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(ImproveInformationActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ModifyInfoActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
                     }
                 });
                 dialog.dismiss();
@@ -200,13 +222,11 @@ public class ImproveInformationActivity extends AppCompatActivity {
 
                     final String message = serverResponse.getMessage();
                     if (serverResponse.getStatus() == Constants.SUCCESS) {
-                        //注册成功
-                        Intent intent = new Intent(ImproveInformationActivity.this, MainActivity.class);
+                        //修改成功
+                        Intent intent = new Intent(ModifyInfoActivity.this, MainActivity.class);
                         startActivity(intent);
-                        ImproveInformationActivity.this.finish();
+                        ModifyInfoActivity.this.finish();
                         User user = serverResponse.getResult();
-                        SharedPreferences userShared = getSharedPreferences("User", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = userShared.edit();
                         editor.putString("userId", user.getUserId());
                         editor.putString("userName", user.getUserName());
                         editor.putString("userPassWord", user.getUserPassword());
@@ -220,7 +240,7 @@ public class ImproveInformationActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(ImproveInformationActivity.this, message, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ModifyInfoActivity.this, message, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -228,16 +248,11 @@ public class ImproveInformationActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(ImproveInformationActivity.this, R.string.server_error, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ModifyInfoActivity.this, R.string.server_error, Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
             }
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 }

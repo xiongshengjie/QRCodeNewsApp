@@ -28,7 +28,9 @@ public final class Constants {
     public static final String getSmsCode = baseUrl + "/user/getSmsCode";
     public static final String checkSmsCode = baseUrl + "/user/checkSmsCode";
     public static final String userRegister = baseUrl + "/user/register";
+    public static final String userUpdate = baseUrl + "/user/update";
     public static final String listNews = baseUrl + "/news/list";
     public static final String getNewsById = baseUrl + "/news/getNewsById";
     public static final String listNewsByUser = baseUrl + "/news/listNewsByUser";
+    public static final String delNews = baseUrl + "/news/delNews";
 }

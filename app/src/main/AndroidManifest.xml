@@ -22,10 +22,10 @@
 
         <meta-data
             android:name="tencent_qq_appid"
-            android:value="101466695" />
+            android:value="" />
         <meta-data
             android:name="weixin_key"
-            android:value="wx23cfbe7b4c0d0512" />
+            android:value="" />
 
         <activity android:name=".activity.StartActivity"></activity>
         <activity
@@ -78,7 +78,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="tencent101466695" />
+                <data android:scheme="tencent" />
                 <!-- 100380359 100381104 222222 -->
             </intent-filter>
         </activity>

@@ -19,13 +19,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:label,android:icon">
-        <activity android:name=".activity.StartActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <meta-data
+            android:name="tencent_qq_appid"
+            android:value="101466695" />
+        <meta-data
+            android:name="weixin_key"
+            android:value="wx23cfbe7b4c0d0512" />
+
+        <activity android:name=".activity.StartActivity"></activity>
         <activity
             android:name=".activity.PublishNewsActivity"
             android:windowSoftInputMode="stateHidden|adjustPan" />
@@ -43,8 +45,44 @@
         <activity
             android:name=".activity.MyPublishActivity"
             android:label="@string/person_publish" />
-        <activity android:name=".activity.ModifyInfoActivity"
-            android:label="@string/person_information"></activity>
+        <activity
+            android:name=".activity.ModifyInfoActivity"
+            android:label="@string/person_information" />
+        <activity android:name=".activity.GuideActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".wxapi.WXEntryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <activity
+            android:name="com.tencent.connect.common.AssistActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="behind"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <activity
+            android:name="com.tencent.tauth.AuthActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="tencent101466695" />
+                <!-- 100380359 100381104 222222 -->
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

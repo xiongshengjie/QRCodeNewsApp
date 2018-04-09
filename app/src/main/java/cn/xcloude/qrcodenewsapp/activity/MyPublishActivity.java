@@ -30,6 +30,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.zxing.client.android.utils.ZXingUtils;
 import com.luck.picture.lib.decoration.RecycleViewDivider;
+import com.xyzlf.share.library.bean.ShareEntity;
+import com.xyzlf.share.library.interfaces.ShareConstant;
+import com.xyzlf.share.library.util.ShareUtil;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuBridge;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
@@ -126,6 +129,11 @@ public class MyPublishActivity extends AppCompatActivity {
         newsListRecyclerView.setSwipeMenuCreator(new SwipeMenuCreator() {
             @Override
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
+
+                if(viewType == 2){
+                    return;
+                }
+
                 int width = getResources().getDimensionPixelSize(R.dimen.news_list_three_height);
 
                 // MATCH_PARENT 自适应高度，保持和内容一样高；也可以指定菜单具体高度，也可以用WRAP_CONTENT。
@@ -154,15 +162,11 @@ public class MyPublishActivity extends AppCompatActivity {
                 final News news = newsList.get(position);
                 if(menuBridge.getPosition() == 0){
                     Bitmap share = ZXingUtils.createQRImage(PREFIX + news.getNewsId());
-                    Intent sendIntent = new Intent();
-                    sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.setType("image/*");
-                    sendIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    sendIntent.putExtra("Kdescription", "快来看我新发布的新闻");
-                    sendIntent.putExtra(Intent.EXTRA_TEXT, "快来看我新发布的新闻");
-                    sendIntent.putExtra(Intent.EXTRA_SUBJECT, "新闻");
-                    sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), share, null,null)));
-                    startActivity(Intent.createChooser(sendIntent, "发送给好友或分享到朋友圈"));
+                    ShareEntity testBean = new ShareEntity(news.getNewsTitle(), "震惊，又发生了一件神奇的事情，快来看看我发布的新闻");
+                    testBean.setUrl(Constants.baseUrl + "/" + news.getNewsUrl()); //分享链接
+                    String filePath = ShareUtil.saveBitmapToSDCard(MyPublishActivity.this, share);
+                    testBean.setImgUrl(filePath);
+                    ShareUtil.showShareDialog(MyPublishActivity.this, testBean, ShareConstant.REQUEST_CODE);
                 }else {
                     //删除
                     AlertDialog dialog = new AlertDialog.Builder(MyPublishActivity.this)

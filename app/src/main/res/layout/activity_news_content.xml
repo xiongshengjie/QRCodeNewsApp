@@ -98,5 +98,15 @@
 
     </android.support.v4.widget.NestedScrollView>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/share_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        app:backgroundTint="@color/gray"
+        android:layout_margin="@dimen/person_center_head_padding_right"
+        android:src="@drawable/share"
+        android:elevation="@dimen/news_list_padding"/>
+
 
 </android.support.design.widget.CoordinatorLayout>

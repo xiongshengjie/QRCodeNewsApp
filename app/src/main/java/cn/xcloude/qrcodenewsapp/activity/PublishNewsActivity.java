@@ -48,6 +48,9 @@ import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
+import com.xyzlf.share.library.bean.ShareEntity;
+import com.xyzlf.share.library.interfaces.ShareConstant;
+import com.xyzlf.share.library.util.ShareUtil;
 
 import org.litepal.crud.DataSupport;
 
@@ -104,6 +107,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
 
     private List<File> files = new ArrayList<>();
     private List<NewsCategory> categories = new ArrayList<>();
+    private News news;
 
     /**
      * The keyboard height provider
@@ -351,7 +355,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                     int status = result.getStatus();
                     final String message = result.getMessage();
                     //成功之后的操作
-                    final News news = result.getResult();
+                    news = result.getResult();
 
                     //发布成功
                     if (status == Constants.SUCCESS) {
@@ -371,21 +375,21 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                                         .setPositiveButton("分享", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
-                                                Intent sendIntent = new Intent();
-                                                sendIntent.setAction(Intent.ACTION_SEND);
-                                                sendIntent.setType("image/*");
-                                                sendIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                                sendIntent.putExtra("Kdescription", "快来看我新发布的新闻");
-                                                sendIntent.putExtra(Intent.EXTRA_TEXT, "快来看我新发布的新闻");
-                                                sendIntent.putExtra(Intent.EXTRA_SUBJECT, "新闻");
-                                                sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), share, null, null)));
-                                                startActivity(Intent.createChooser(sendIntent, "发送给好友或分享到朋友圈"));
-                                                PublishNewsActivity.this.finish();
+                                                ShareEntity shareBean = new ShareEntity(news.getNewsTitle(), ((NewsCategory) newsCategory.getSelectedItem()).getCategoryName());
+                                                shareBean.setUrl(Constants.baseUrl + "/" + news.getNewsUrl()); //分享链接
+                                                String filePath = ShareUtil.saveBitmapToSDCard(PublishNewsActivity.this, ZXingUtils.createQRImage(PREFIX + news.getNewsId()));
+                                                shareBean.setImgUrl(filePath);
+                                                ShareUtil.showShareDialog(PublishNewsActivity.this, shareBean, ShareConstant.REQUEST_CODE);
                                             }
                                         })
                                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
+                                                Intent intent = new Intent(PublishNewsActivity.this, NewsContentActivity.class);
+                                                Bundle bundle = new Bundle();
+                                                bundle.putSerializable("news",news);
+                                                intent.putExtras(bundle);
+                                                startActivity(intent);
                                                 PublishNewsActivity.this.finish();
                                             }
                                         })
@@ -499,6 +503,13 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                 }
                 mRichEditorAction.insertImageUrl(path);
             }
+        }else if(requestCode == ShareConstant.REQUEST_CODE){
+            Intent intent = new Intent(PublishNewsActivity.this, NewsContentActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("news",news);
+            intent.putExtras(bundle);
+            startActivity(intent);
+            PublishNewsActivity.this.finish();
         }
     }
 

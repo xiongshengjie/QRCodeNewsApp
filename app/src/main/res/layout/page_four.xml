@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    android:background="@drawable/p4"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/guide_enter"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:text="开始体验"
+        android:textSize="@dimen/text_super"
+        android:background="@android:color/transparent" />
+
+
+</LinearLayout>

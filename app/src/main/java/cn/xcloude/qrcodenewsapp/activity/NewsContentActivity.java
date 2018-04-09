@@ -34,10 +34,12 @@ import cn.xcloude.qrcodenewsapp.entity.News;
 import cn.xcloude.qrcodenewsapp.entity.NewsCategory;
 
 import static cn.xcloude.qrcodenewsapp.constant.Constants.PREFIX;
+import static cn.xcloude.qrcodenewsapp.constant.Constants.SYSTEM_USER;
 
 public class NewsContentActivity extends AppCompatActivity {
 
     private News news;
+    private boolean isSystem = false;
 
     @BindView(R.id.content_toolbar)
     Toolbar contentToolBar;
@@ -66,6 +68,9 @@ public class NewsContentActivity extends AppCompatActivity {
 
     private void init() {
         news = (News) getIntent().getSerializableExtra("news");
+        if(SYSTEM_USER.equals(news.getNewsAuthor())){
+            isSystem = true;
+        }
     }
 
     private void initView() {
@@ -91,8 +96,13 @@ public class NewsContentActivity extends AppCompatActivity {
             }
         });
 
-        newsTitle.setText(news.getNewsTitle());
-        newsAuthor.setText(news.getNewsAuthor());
+        if(isSystem){
+            newsTitle.setVisibility(View.GONE);
+            newsAuthor.setVisibility(View.GONE);
+        }else{
+            newsTitle.setText(news.getNewsTitle());
+            newsAuthor.setText(news.getNewsAuthor());
+        }
         setSupportActionBar(contentToolBar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -100,7 +110,7 @@ public class NewsContentActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        contentWebView.loadUrl(Constants.baseUrl + "/" + news.getNewsUrl());
+        contentWebView.loadUrl(news.getNewsUrl());
         final List<NewsCategory> category = DataSupport.where("categoryId = ?", news.getNewsCategory().toString()).find(NewsCategory.class);
         if (category.size() > 0) {
             collapsingBar.setTitle(category.get(0).getCategoryName());
@@ -109,14 +119,14 @@ public class NewsContentActivity extends AppCompatActivity {
                 .error(R.drawable.default_background);
 
         Glide.with(NewsContentActivity.this)
-                .load(Constants.baseUrl + "/" + news.getNewsImg().split("\\|")[0])
+                .load(news.getNewsImg().split("\\|")[0])
                 .apply(options)
                 .into(headToolbar);
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ShareEntity shareBean = new ShareEntity(news.getNewsTitle(), category.get(0).getCategoryName());
-                shareBean.setUrl(Constants.baseUrl + "/" + news.getNewsUrl()); //分享链接
+                shareBean.setUrl(news.getNewsUrl()); //分享链接
                 String filePath = ShareUtil.saveBitmapToSDCard(NewsContentActivity.this, ZXingUtils.createQRImage(PREFIX + news.getNewsId()));
                 shareBean.setImgUrl(filePath);
                 ShareUtil.showShareDialog(NewsContentActivity.this, shareBean, ShareConstant.REQUEST_CODE);

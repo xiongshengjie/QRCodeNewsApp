@@ -256,7 +256,7 @@ public class ListNewsFragment extends Fragment {
                     options.centerCrop();
                     ((OnePictureViewHolder) holder).newsPic.setVisibility(View.VISIBLE);
                     Glide.with(getActivity())
-                            .load(Constants.baseUrl + "/" + imagePath)
+                            .load(imagePath)
                             .apply(options)
                             .into(((OnePictureViewHolder) holder).newsPic);
 
@@ -273,17 +273,17 @@ public class ListNewsFragment extends Fragment {
                 RequestOptions options = new RequestOptions();
                 options.centerCrop();
                 Glide.with(getActivity())
-                        .load(Constants.baseUrl + "/" + path[0])
+                        .load(path[0])
                         .apply(options)
                         .into(((ThreePictureViewHolder) holder).imageViewOne);
 
                 Glide.with(getActivity())
-                        .load(Constants.baseUrl + "/" + path[1])
+                        .load(path[1])
                         .apply(options)
                         .into(((ThreePictureViewHolder) holder).imageViewTwo);
 
                 Glide.with(getActivity())
-                        .load(Constants.baseUrl + "/" + path[2])
+                        .load(path[2])
                         .apply(options)
                         .into(((ThreePictureViewHolder) holder).imageViewThree);
             }else if(holder instanceof FootViewHolder){

@@ -376,7 +376,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 ShareEntity shareBean = new ShareEntity(news.getNewsTitle(), ((NewsCategory) newsCategory.getSelectedItem()).getCategoryName());
-                                                shareBean.setUrl(Constants.baseUrl + "/" + news.getNewsUrl()); //分享链接
+                                                shareBean.setUrl(news.getNewsUrl()); //分享链接
                                                 String filePath = ShareUtil.saveBitmapToSDCard(PublishNewsActivity.this, ZXingUtils.createQRImage(PREFIX + news.getNewsId()));
                                                 shareBean.setImgUrl(filePath);
                                                 ShareUtil.showShareDialog(PublishNewsActivity.this, shareBean, ShareConstant.REQUEST_CODE);

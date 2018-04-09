@@ -163,7 +163,7 @@ public class MyPublishActivity extends AppCompatActivity {
                 if(menuBridge.getPosition() == 0){
                     Bitmap share = ZXingUtils.createQRImage(PREFIX + news.getNewsId());
                     ShareEntity testBean = new ShareEntity(news.getNewsTitle(), "震惊，又发生了一件神奇的事情，快来看看我发布的新闻");
-                    testBean.setUrl(Constants.baseUrl + "/" + news.getNewsUrl()); //分享链接
+                    testBean.setUrl(news.getNewsUrl()); //分享链接
                     String filePath = ShareUtil.saveBitmapToSDCard(MyPublishActivity.this, share);
                     testBean.setImgUrl(filePath);
                     ShareUtil.showShareDialog(MyPublishActivity.this, testBean, ShareConstant.REQUEST_CODE);
@@ -370,7 +370,7 @@ public class MyPublishActivity extends AppCompatActivity {
                     options.centerCrop();
                     ((NewsAdapter.ItemViewHolder) holder).newsPic.setVisibility(View.VISIBLE);
                     Glide.with(MyPublishActivity.this)
-                            .load(Constants.baseUrl + "/" + imagePath)
+                            .load(imagePath)
                             .apply(options)
                             .into(((NewsAdapter.ItemViewHolder) holder).newsPic);
 

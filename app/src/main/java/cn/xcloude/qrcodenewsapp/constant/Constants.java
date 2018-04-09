@@ -16,6 +16,8 @@ public final class Constants {
 
     public static final long SMS_OUTOFDATE= 120500L;
 
+    public static final String SYSTEM_USER = "System";
+
     public static final String PREFIX = "msxw://";
 
     public static String baseUrl = "https://www.xcloude.cn/QRCodeNews";

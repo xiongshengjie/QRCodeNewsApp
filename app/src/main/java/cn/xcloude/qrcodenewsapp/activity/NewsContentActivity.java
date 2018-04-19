@@ -1,10 +1,15 @@
 package cn.xcloude.qrcodenewsapp.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,6 +19,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -33,6 +39,7 @@ import cn.xcloude.qrcodenewsapp.constant.Constants;
 import cn.xcloude.qrcodenewsapp.entity.News;
 import cn.xcloude.qrcodenewsapp.entity.NewsCategory;
 
+import static cn.xcloude.qrcodenewsapp.constant.Constants.PERMISSION_REQUEST_CODE;
 import static cn.xcloude.qrcodenewsapp.constant.Constants.PREFIX;
 import static cn.xcloude.qrcodenewsapp.constant.Constants.SYSTEM_USER;
 
@@ -55,6 +62,8 @@ public class NewsContentActivity extends AppCompatActivity {
     TextView newsAuthor;
     @BindView(R.id.share_button)
     FloatingActionButton shareButton;
+
+    private List<NewsCategory> shareCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,13 +134,36 @@ public class NewsContentActivity extends AppCompatActivity {
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ShareEntity shareBean = new ShareEntity(news.getNewsTitle(), category.get(0).getCategoryName());
-                shareBean.setUrl(news.getNewsUrl()); //分享链接
-                String filePath = ShareUtil.saveBitmapToSDCard(NewsContentActivity.this, ZXingUtils.createQRImage(PREFIX + news.getNewsId()));
-                shareBean.setImgUrl(filePath);
-                ShareUtil.showShareDialog(NewsContentActivity.this, shareBean, ShareConstant.REQUEST_CODE);
+                if (ContextCompat.checkSelfPermission(NewsContentActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(NewsContentActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    shareCategory = category;
+                    ActivityCompat.requestPermissions(NewsContentActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+                } else {
+                    share(category);
+                }
             }
         });
+    }
+
+    private void share(List<NewsCategory> category){
+        ShareEntity shareBean = new ShareEntity(news.getNewsTitle(), category.get(0).getCategoryName());
+        shareBean.setUrl(news.getNewsUrl()); //分享链接
+        String filePath = ShareUtil.saveBitmapToSDCard(NewsContentActivity.this, ZXingUtils.createQRImage(PREFIX + news.getNewsId()));
+        shareBean.setImgUrl(filePath);
+        ShareUtil.showShareDialog(NewsContentActivity.this, shareBean, ShareConstant.REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case PERMISSION_REQUEST_CODE:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                    share(shareCategory);
+                }else {
+                    Toast.makeText(NewsContentActivity.this,"您尚未授予读写储存",Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
     }
 
     @Override

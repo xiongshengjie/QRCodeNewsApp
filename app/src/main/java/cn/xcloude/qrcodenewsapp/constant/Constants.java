@@ -16,6 +16,8 @@ public final class Constants {
 
     public static final long SMS_OUTOFDATE= 120500L;
 
+    public static final int PERMISSION_REQUEST_CODE = 1;
+
     public static final String SYSTEM_USER = "System";
 
     public static final String PREFIX = "msxw://";

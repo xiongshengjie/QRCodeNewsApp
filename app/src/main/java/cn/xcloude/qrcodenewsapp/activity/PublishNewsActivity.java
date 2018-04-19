@@ -1,5 +1,6 @@
 package cn.xcloude.qrcodenewsapp.activity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Instrumentation;
@@ -7,22 +8,20 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -85,6 +84,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static cn.xcloude.qrcodenewsapp.constant.Constants.PERMISSION_REQUEST_CODE;
 import static cn.xcloude.qrcodenewsapp.constant.Constants.PREFIX;
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -375,11 +375,12 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                                         .setPositiveButton("分享", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
-                                                ShareEntity shareBean = new ShareEntity(news.getNewsTitle(), ((NewsCategory) newsCategory.getSelectedItem()).getCategoryName());
-                                                shareBean.setUrl(news.getNewsUrl()); //分享链接
-                                                String filePath = ShareUtil.saveBitmapToSDCard(PublishNewsActivity.this, ZXingUtils.createQRImage(PREFIX + news.getNewsId()));
-                                                shareBean.setImgUrl(filePath);
-                                                ShareUtil.showShareDialog(PublishNewsActivity.this, shareBean, ShareConstant.REQUEST_CODE);
+                                                if (ContextCompat.checkSelfPermission(PublishNewsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                                                        || ContextCompat.checkSelfPermission(PublishNewsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                                    ActivityCompat.requestPermissions(PublishNewsActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+                                                } else {
+                                                    share();
+                                                }
                                             }
                                         })
                                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -387,7 +388,7 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 Intent intent = new Intent(PublishNewsActivity.this, NewsContentActivity.class);
                                                 Bundle bundle = new Bundle();
-                                                bundle.putSerializable("news",news);
+                                                bundle.putSerializable("news", news);
                                                 intent.putExtras(bundle);
                                                 startActivity(intent);
                                                 PublishNewsActivity.this.finish();
@@ -421,18 +422,39 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
         }, params, files);
     }
 
+    private void share() {
+        ShareEntity shareBean = new ShareEntity(news.getNewsTitle(), ((NewsCategory) newsCategory.getSelectedItem()).getCategoryName());
+        shareBean.setUrl(news.getNewsUrl()); //分享链接
+        String filePath = ShareUtil.saveBitmapToSDCard(PublishNewsActivity.this, ZXingUtils.createQRImage(PREFIX + news.getNewsId()));
+        shareBean.setImgUrl(filePath);
+        ShareUtil.showShareDialog(PublishNewsActivity.this, shareBean, ShareConstant.REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case PERMISSION_REQUEST_CODE:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                    share();
+                }else {
+                    Toast.makeText(PublishNewsActivity.this,"您尚未授予读写储存",Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
     @OnClick(R.id.iv_action_undo)
-    void onClickUndo(){
+    void onClickUndo() {
         mRichEditorAction.undo();
     }
 
     @OnClick(R.id.iv_action_redo)
-    void onClickRedo(){
+    void onClickRedo() {
         mRichEditorAction.redo();
     }
 
     @OnClick(R.id.iv_get_html)
-    void onClickGetHtml(){
+    void onClickGetHtml() {
         mRichEditorAction.refreshHtml(mRichEditorCallback, onGetHtmlListener);
     }
 
@@ -503,10 +525,10 @@ public class PublishNewsActivity extends AppCompatActivity implements KeyboardHe
                 }
                 mRichEditorAction.insertImageUrl(path);
             }
-        }else if(requestCode == ShareConstant.REQUEST_CODE){
+        } else if (requestCode == ShareConstant.REQUEST_CODE) {
             Intent intent = new Intent(PublishNewsActivity.this, NewsContentActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putSerializable("news",news);
+            bundle.putSerializable("news", news);
             intent.putExtras(bundle);
             startActivity(intent);
             PublishNewsActivity.this.finish();

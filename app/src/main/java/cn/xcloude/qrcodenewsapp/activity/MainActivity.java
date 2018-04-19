@@ -1,17 +1,21 @@
 package cn.xcloude.qrcodenewsapp.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -53,6 +57,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static cn.xcloude.qrcodenewsapp.constant.Constants.PERMISSION_REQUEST_CODE;
 import static cn.xcloude.qrcodenewsapp.constant.Constants.PREFIX;
 
 public class MainActivity extends AppCompatActivity {
@@ -242,23 +247,45 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case R.id.qr_scanner:
-                //扫码
-                intent = new Intent(this, CaptureActivity.class);
-                //是否显示相册按钮
-                intent.putExtra(CaptureActivity.INTENT_KEY_PHOTO_FLAG, true);
-                //识别声音
-                intent.putExtra(CaptureActivity.INTENT_KEY_BEEP_FLAG, false);
-                //识别震动
-                intent.putExtra(CaptureActivity.INTENT_KEY_VIBRATE_FLAG, true);
-                //扫码框的颜色
-                intent.putExtra(CaptureActivity.INTENT_KEY_SCSNCOLOR, R.color.scan);
-                //扫码框上面的提示文案
-                intent.putExtra(CaptureActivity.INTENT_KEY_HINTTEXT, R.string.scan_notice);
-                startActivityForResult(intent, 1000);
+
+                if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.CAMERA},PERMISSION_REQUEST_CODE);
+                }else{
+                    startScan();
+                }
                 break;
             default:
         }
         return true;
+    }
+
+    private void startScan(){
+        //扫码
+        Intent intent = new Intent(this, CaptureActivity.class);
+        //是否显示相册按钮
+        intent.putExtra(CaptureActivity.INTENT_KEY_PHOTO_FLAG, true);
+        //识别声音
+        intent.putExtra(CaptureActivity.INTENT_KEY_BEEP_FLAG, false);
+        //识别震动
+        intent.putExtra(CaptureActivity.INTENT_KEY_VIBRATE_FLAG, true);
+        //扫码框的颜色
+        intent.putExtra(CaptureActivity.INTENT_KEY_SCSNCOLOR, R.color.scan);
+        //扫码框上面的提示文案
+        intent.putExtra(CaptureActivity.INTENT_KEY_HINTTEXT, R.string.scan_notice);
+        startActivityForResult(intent, 1000);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case PERMISSION_REQUEST_CODE:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    startScan();
+                }else {
+                    Toast.makeText(MainActivity.this,"您尚未授予相机权限",Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
     }
 
     @Override

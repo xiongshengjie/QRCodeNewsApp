@@ -1,13 +1,14 @@
 package cn.xcloude.qrcodenewsapp.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -40,7 +41,6 @@ import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuItemClickListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,6 @@ import cn.xcloude.qrcodenewsapp.R;
 import cn.xcloude.qrcodenewsapp.constant.Constants;
 import cn.xcloude.qrcodenewsapp.entity.News;
 import cn.xcloude.qrcodenewsapp.entity.ResponseResult;
-import cn.xcloude.qrcodenewsapp.fragment.ListNewsFragment;
 import cn.xcloude.qrcodenewsapp.interfaces.OnItemClickListener;
 import cn.xcloude.qrcodenewsapp.utils.OkHttpUtil;
 import okhttp3.Call;
@@ -59,6 +58,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 import static cn.xcloude.qrcodenewsapp.constant.Constants.PAGESIZE;
+import static cn.xcloude.qrcodenewsapp.constant.Constants.PERMISSION_REQUEST_CODE;
 import static cn.xcloude.qrcodenewsapp.constant.Constants.PREFIX;
 
 public class MyPublishActivity extends AppCompatActivity {
@@ -75,6 +75,7 @@ public class MyPublishActivity extends AppCompatActivity {
     private int lastVisibleItem;
     private List<News> newsList = new ArrayList<>();
     private NewsAdapter newsAdapter;
+    private News shareNews;
 
     private LinearLayoutManager linearLayoutManager;
 
@@ -119,7 +120,7 @@ public class MyPublishActivity extends AppCompatActivity {
                     News news = newsList.get(position);
                     Intent intent = new Intent(MyPublishActivity.this, NewsContentActivity.class);
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("news",news);
+                    bundle.putSerializable("news", news);
                     intent.putExtras(bundle);
                     startActivity(intent);
                 }
@@ -130,7 +131,7 @@ public class MyPublishActivity extends AppCompatActivity {
             @Override
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
 
-                if(viewType == 2){
+                if (viewType == 2) {
                     return;
                 }
 
@@ -155,19 +156,20 @@ public class MyPublishActivity extends AppCompatActivity {
             }
         });
 
-        newsListRecyclerView.setSwipeMenuItemClickListener(new SwipeMenuItemClickListener(){
+        newsListRecyclerView.setSwipeMenuItemClickListener(new SwipeMenuItemClickListener() {
             @Override
             public void onItemClick(SwipeMenuBridge menuBridge) {
                 final int position = menuBridge.getAdapterPosition();
                 final News news = newsList.get(position);
-                if(menuBridge.getPosition() == 0){
-                    Bitmap share = ZXingUtils.createQRImage(PREFIX + news.getNewsId());
-                    ShareEntity testBean = new ShareEntity(news.getNewsTitle(), "震惊，又发生了一件神奇的事情，快来看看我发布的新闻");
-                    testBean.setUrl(news.getNewsUrl()); //分享链接
-                    String filePath = ShareUtil.saveBitmapToSDCard(MyPublishActivity.this, share);
-                    testBean.setImgUrl(filePath);
-                    ShareUtil.showShareDialog(MyPublishActivity.this, testBean, ShareConstant.REQUEST_CODE);
-                }else {
+                if (menuBridge.getPosition() == 0) {
+                    if (ContextCompat.checkSelfPermission(MyPublishActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                            || ContextCompat.checkSelfPermission(MyPublishActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        shareNews = news;
+                        ActivityCompat.requestPermissions(MyPublishActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+                    } else {
+                        share(news);
+                    }
+                } else {
                     //删除
                     AlertDialog dialog = new AlertDialog.Builder(MyPublishActivity.this)
                             .setTitle(R.string.title)
@@ -201,7 +203,7 @@ public class MyPublishActivity extends AppCompatActivity {
                                                         public void run() {
                                                             newsList.remove(position);
                                                             newsAdapter.notifyItemRemoved(position);
-                                                            Toast.makeText(MyPublishActivity.this,R.string.del_success,Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(MyPublishActivity.this, R.string.del_success, Toast.LENGTH_SHORT).show();
                                                         }
                                                     });
                                                 } else {
@@ -228,7 +230,7 @@ public class MyPublishActivity extends AppCompatActivity {
                             .setNegativeButton(R.string.cancle, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    
+
                                 }
                             })
                             .show();
@@ -264,6 +266,28 @@ public class MyPublishActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void share(News news) {
+        Bitmap share = ZXingUtils.createQRImage(PREFIX + news.getNewsId());
+        ShareEntity testBean = new ShareEntity(news.getNewsTitle(), "震惊，又发生了一件神奇的事情，快来看看我发布的新闻");
+        testBean.setUrl(news.getNewsUrl()); //分享链接
+        String filePath = ShareUtil.saveBitmapToSDCard(MyPublishActivity.this, share);
+        testBean.setImgUrl(filePath);
+        ShareUtil.showShareDialog(MyPublishActivity.this, testBean, ShareConstant.REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case PERMISSION_REQUEST_CODE:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                    share(shareNews);
+                }else {
+                    Toast.makeText(MyPublishActivity.this,"您尚未授予读写储存",Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
     }
 
     private void getNews() {
@@ -374,11 +398,11 @@ public class MyPublishActivity extends AppCompatActivity {
                             .apply(options)
                             .into(((NewsAdapter.ItemViewHolder) holder).newsPic);
 
-                }else {
+                } else {
                     ((NewsAdapter.ItemViewHolder) holder).newsPic.setVisibility(View.GONE);
                 }
-            }else if(holder instanceof NewsAdapter.FootViewHolder){
-                if(!isMore) {
+            } else if (holder instanceof NewsAdapter.FootViewHolder) {
+                if (!isMore) {
                     ((NewsAdapter.FootViewHolder) holder).loading.setText(R.string.no_more);
                 }
             }

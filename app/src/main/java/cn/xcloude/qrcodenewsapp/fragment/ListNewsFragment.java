@@ -1,5 +1,7 @@
 package cn.xcloude.qrcodenewsapp.fragment;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -62,6 +64,8 @@ public class ListNewsFragment extends Fragment {
     private NewsAdapter newsAdapter;
     private int lastVisibleItem;
 
+    private Activity mActivity;
+
     public ListNewsFragment() {
         // Required empty public constructor
     }
@@ -93,16 +97,22 @@ public class ListNewsFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mActivity = (Activity) context;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_list_news, container, false);
         swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
         recyclerView = rootView.findViewById(R.id.news_list_view);
-        linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager = new LinearLayoutManager(mActivity);
         linearLayoutManager.setOrientation(OrientationHelper.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.addItemDecoration(new RecycleViewDivider(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, 2, ContextCompat.getColor(getActivity(), R.color.gray)));
+        recyclerView.addItemDecoration(new RecycleViewDivider(mActivity.getApplicationContext(), LinearLayoutManager.HORIZONTAL, 2, ContextCompat.getColor(mActivity, R.color.gray)));
         getNews();
         if (newsAdapter == null) {
             newsAdapter = new NewsAdapter();
@@ -111,11 +121,11 @@ public class ListNewsFragment extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
                 News news = newsList.get(position);
-                Intent intent = new Intent(getActivity(), NewsContentActivity.class);
+                Intent intent = new Intent(mActivity, NewsContentActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("news",news);
                 intent.putExtras(bundle);
-                getActivity().startActivity(intent);
+                mActivity.startActivity(intent);
             }
         });
         recyclerView.setAdapter(newsAdapter);
@@ -151,10 +161,10 @@ public class ListNewsFragment extends Fragment {
         OkHttpUtil.listNews(id, pageNum, PAGESIZE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                getActivity().runOnUiThread(new Runnable() {
+                mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getActivity(), R.string.network_error, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mActivity, R.string.network_error, Toast.LENGTH_SHORT).show();
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 });
@@ -169,7 +179,7 @@ public class ListNewsFragment extends Fragment {
                     final String message = serverResponse.getMessage();
                     if (serverResponse.getStatus() == Constants.SUCCESS) {
                         //获取新闻成功
-                        getActivity().runOnUiThread(new Runnable() {
+                        mActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
 
@@ -192,19 +202,19 @@ public class ListNewsFragment extends Fragment {
                         });
                     } else {
                         //获取新闻失败
-                        getActivity().runOnUiThread(new Runnable() {
+                        mActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();
                                 swipeRefreshLayout.setRefreshing(false);
                             }
                         });
                     }
                 } else {
-                    getActivity().runOnUiThread(new Runnable() {
+                    mActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(getActivity(), R.string.server_error, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mActivity, R.string.server_error, Toast.LENGTH_SHORT).show();
                             swipeRefreshLayout.setRefreshing(false);
                         }
                     });
@@ -255,7 +265,7 @@ public class ListNewsFragment extends Fragment {
                     RequestOptions options = new RequestOptions();
                     options.centerCrop();
                     ((OnePictureViewHolder) holder).newsPic.setVisibility(View.VISIBLE);
-                    Glide.with(getActivity())
+                    Glide.with(mActivity)
                             .load(imagePath)
                             .apply(options)
                             .into(((OnePictureViewHolder) holder).newsPic);
@@ -272,17 +282,17 @@ public class ListNewsFragment extends Fragment {
                 String path[] = imagePath.split("\\|");
                 RequestOptions options = new RequestOptions();
                 options.centerCrop();
-                Glide.with(getActivity())
+                Glide.with(mActivity)
                         .load(path[0])
                         .apply(options)
                         .into(((ThreePictureViewHolder) holder).imageViewOne);
 
-                Glide.with(getActivity())
+                Glide.with(mActivity)
                         .load(path[1])
                         .apply(options)
                         .into(((ThreePictureViewHolder) holder).imageViewTwo);
 
-                Glide.with(getActivity())
+                Glide.with(mActivity)
                         .load(path[2])
                         .apply(options)
                         .into(((ThreePictureViewHolder) holder).imageViewThree);

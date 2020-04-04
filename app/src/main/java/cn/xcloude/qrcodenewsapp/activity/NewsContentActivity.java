@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -15,6 +16,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
@@ -35,7 +38,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.xcloude.qrcodenewsapp.R;
-import cn.xcloude.qrcodenewsapp.constant.Constants;
 import cn.xcloude.qrcodenewsapp.entity.News;
 import cn.xcloude.qrcodenewsapp.entity.NewsCategory;
 
@@ -77,7 +79,7 @@ public class NewsContentActivity extends AppCompatActivity {
 
     private void init() {
         news = (News) getIntent().getSerializableExtra("news");
-        if(SYSTEM_USER.equals(news.getNewsAuthor())){
+        if (SYSTEM_USER.equals(news.getNewsAuthor())) {
             isSystem = true;
         }
     }
@@ -86,7 +88,6 @@ public class NewsContentActivity extends AppCompatActivity {
         contentWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-
                 WebView.HitTestResult hit = view.getHitTestResult();
                 if (hit != null) {
                     int hitType = hit.getType();
@@ -103,12 +104,21 @@ public class NewsContentActivity extends AppCompatActivity {
                 }
                 return true;
             }
-        });
 
-        if(isSystem){
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed();
+                super.onReceivedSslError(view, handler, error);
+            }
+        });
+        WebSettings settings = contentWebView.getSettings();
+        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        settings.setDomStorageEnabled(true);
+
+        if (isSystem) {
             newsTitle.setVisibility(View.GONE);
             newsAuthor.setVisibility(View.GONE);
-        }else{
+        } else {
             newsTitle.setText(news.getNewsTitle());
             newsAuthor.setText(news.getNewsAuthor());
         }
@@ -137,7 +147,7 @@ public class NewsContentActivity extends AppCompatActivity {
                 if (ContextCompat.checkSelfPermission(NewsContentActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                         || ContextCompat.checkSelfPermission(NewsContentActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     shareCategory = category;
-                    ActivityCompat.requestPermissions(NewsContentActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+                    ActivityCompat.requestPermissions(NewsContentActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
                 } else {
                     share(category);
                 }
@@ -145,7 +155,7 @@ public class NewsContentActivity extends AppCompatActivity {
         });
     }
 
-    private void share(List<NewsCategory> category){
+    private void share(List<NewsCategory> category) {
         ShareEntity shareBean = new ShareEntity(news.getNewsTitle(), category.get(0).getCategoryName());
         shareBean.setUrl(news.getNewsUrl()); //分享链接
         String filePath = ShareUtil.saveBitmapToSDCard(NewsContentActivity.this, ZXingUtils.createQRImage(PREFIX + news.getNewsId()));
@@ -155,12 +165,12 @@ public class NewsContentActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
+        switch (requestCode) {
             case PERMISSION_REQUEST_CODE:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     share(shareCategory);
-                }else {
-                    Toast.makeText(NewsContentActivity.this,"您尚未授予读写储存",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(NewsContentActivity.this, "您尚未授予读写储存", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
